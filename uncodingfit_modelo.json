@@ -1,0 +1,124 @@
+{
+  "_meta": {
+    "nombre": "UncodingFit - modelo de calculo de proteina (v1)",
+    "version": "1.0.0",
+    "base": "Proteina diaria = peso_kg * factor_g_kg. El factor sale del cruce actividad x objetivo. Se devuelve SIEMPRE un rango (minimo-maximo), no una cifra unica.",
+    "unidad_factor": "g de proteina por kg de peso corporal y dia",
+    "disclaimer": "Orientativo. No es consejo medico ni dietetico. Ante dudas, patologia renal u objetivos especificos, consultar a un profesional."
+  },
+  "campos_formulario": {
+    "sexo": [
+      "mujer",
+      "hombre"
+    ],
+    "edad": "anios (entero)",
+    "altura_cm": "numero",
+    "peso_kg": "numero",
+    "actividad": [
+      "sedentario",
+      "ligero",
+      "moderado",
+      "alto"
+    ],
+    "objetivo": [
+      "mantener",
+      "ganar_musculo",
+      "perder_grasa"
+    ]
+  },
+  "nota_sexo_altura_edad": "En v1 el calculo de PROTEINA depende de peso, actividad, objetivo y edad. Sexo y altura se recogen para el futuro modo CALORIAS/metabolismo basal (formula Mifflin-St Jeor), donde si son imprescindibles. Guardarlos ya evita pedirlos de nuevo.",
+  "factores_g_kg": {
+    "mantener": {
+      "sedentario": [
+        0.8,
+        1.0
+      ],
+      "ligero": [
+        1.0,
+        1.4
+      ],
+      "moderado": [
+        1.2,
+        1.6
+      ],
+      "alto": [
+        1.4,
+        1.8
+      ]
+    },
+    "ganar_musculo": {
+      "sedentario": [
+        1.2,
+        1.6
+      ],
+      "ligero": [
+        1.4,
+        1.8
+      ],
+      "moderado": [
+        1.6,
+        2.0
+      ],
+      "alto": [
+        1.8,
+        2.2
+      ]
+    },
+    "perder_grasa": {
+      "sedentario": [
+        1.2,
+        1.6
+      ],
+      "ligero": [
+        1.4,
+        1.8
+      ],
+      "moderado": [
+        1.6,
+        2.2
+      ],
+      "alto": [
+        1.8,
+        2.4
+      ]
+    }
+  },
+  "ajuste_edad": {
+    "regla": "En mayores de 65 anios la sintesis proteica es menos eficiente: subir el suelo del rango a 1.0 g/kg como minimo.",
+    "umbral_edad": 65,
+    "suelo_minimo_g_kg": 1.0
+  },
+  "ajuste_peso_alto_porcentaje_graso": {
+    "aviso": "El factor g/kg se aplica sobre peso corporal. En personas con sobrepeso/obesidad marcada, usar el peso real sobreestima la proteina. v1 no mide % graso, asi que se usa peso real pero se recomienda mostrar un aviso cuando el IMC sea muy alto.",
+    "imc_aviso": 30
+  },
+  "actividad_descripcion": {
+    "sedentario": "Poco o nada de ejercicio; trabajo de oficina.",
+    "ligero": "Ejercicio ligero 1-3 dias/semana.",
+    "moderado": "Ejercicio moderado 3-5 dias/semana.",
+    "alto": "Entreno intenso 6-7 dias/semana o trabajo fisico."
+  },
+  "reparto_comidas": {
+    "regla": "Repartir el total diario en 3-4 tomas para optimizar la sintesis proteica.",
+    "objetivo_por_toma_g": [
+      20,
+      40
+    ],
+    "nota": "Mostrar: 'reparte en 3-4 comidas de ~X g cada una'."
+  },
+  "salida": {
+    "proteina_dia_g": "rango = [round(peso*factor_min), round(peso*factor_max)]",
+    "por_comida_g": "rango_dia / num_comidas (sugerir 4)",
+    "mensaje_disclaimer": true
+  },
+  "pseudocodigo": [
+    "f = factores_g_kg[objetivo][actividad]",
+    "min_gkg, max_gkg = f[0], f[1]",
+    "if edad >= 65: min_gkg = max(min_gkg, 1.0)",
+    "prot_min = round(peso_kg * min_gkg)",
+    "prot_max = round(peso_kg * max_gkg)",
+    "imc = peso_kg / (altura_cm/100)**2",
+    "aviso_imc = imc >= 30",
+    "por_comida = (round(prot_min/4), round(prot_max/4))"
+  ]
+}

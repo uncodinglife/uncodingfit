@@ -1,0 +1,32 @@
+{
+  "name": "UncodingFit — Calculadora de proteína",
+  "short_name": "UncodingFit",
+  "description": "Calcula tu proteína diaria y consulta la proteína de cada alimento. Gratis y sin cuentas.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0e1314",
+  "theme_color": "#ff5a1f",
+  "lang": "es",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
