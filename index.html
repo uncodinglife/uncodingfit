@@ -5,7 +5,7 @@
 <link rel="icon" href="icons/icon-192.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: calculadora como héroe + tabla de alimentos buscable debajo, una columna centrada */
+/* App shell móvil: cabecera fija, pantalla con scroll propio, barra de pestañas abajo (Calcular / Alimentos) */
 :root{
   --bg:#f4f6f5; --surface:#ffffff; --surface-2:#eef1ef;
   --fg:#14191b; --muted:#59646a; --line:#e0e5e2;
@@ -13,7 +13,7 @@
   --good:#1f9d57; --warn:#b9770a; --warn-soft:#fcf1dd;
   --display:"Archivo",system-ui,sans-serif;
   --body:"Public Sans",system-ui,sans-serif;
-  --radius:14px; --maxw:860px;
+  --radius:16px; --appw:480px;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0e1314; --surface:#161d1f; --surface-2:#1d2528;
@@ -29,302 +29,256 @@
   --good:#2fb96d; --warn:#e0982e; --warn-soft:#2a2213;
   color-scheme:dark;
 }
+html,body{height:100%}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased}
-.wrap{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
 h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
 .tnum{font-variant-numeric:tabular-nums}
-a{color:var(--accent)}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* shell */
+.app{height:100%;max-width:var(--appw);margin:0 auto;display:flex;flex-direction:column;background:var(--bg);border-inline:1px solid var(--line)}
+@media (max-width:520px){.app{border-inline:0}}
 
 /* header */
-header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:11;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:12;background:var(--bg)}
-.top .wrap{display:flex;align-items:center;gap:12px;padding-block:12px}
-.brand{display:flex;align-items:baseline;gap:8px;font-family:var(--display);font-weight:800;font-size:1.15rem;letter-spacing:-.02em}
-.brand b{color:var(--accent);font-weight:800}
-.brand .sub{font-family:var(--body);font-weight:500;font-size:.72rem;color:var(--muted);letter-spacing:.02em}
-.spacer{flex:1}
-.tbtn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--fg);width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:1rem;display:grid;place-items:center}
-.tbtn:hover{border-color:var(--accent)}
+.hdr{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding-block:12px;border-bottom:1px solid var(--line);background:var(--surface)}
+.brand{display:flex;align-items:baseline;gap:8px;font-family:var(--display);font-weight:800;font-size:1.1rem;letter-spacing:-.02em}
+.brand .word b{color:var(--accent)}
+.brand .sub{font-family:var(--body);font-weight:500;font-size:.68rem;color:var(--muted);letter-spacing:.02em}
+.hdr .sp{flex:1}
+.tbtn{appearance:none;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:1rem;display:grid;place-items:center}
+.tbtn:active{transform:scale(.96)}
 
-main{padding-block:28px 48px}
-.lead{color:var(--muted);font-size:.95rem;max-width:62ch;margin:.5rem 0 0}
-.eyebrow{font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:700;font-family:var(--body)}
+/* screens */
+.screen{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-block:18px 24px}
+.screen[hidden]{display:none}
+.stitle{font-size:1.35rem;margin-bottom:2px}
+.ssub{color:var(--muted);font-size:.88rem;margin-bottom:16px}
 
 /* calculator */
-.calc{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-top:22px;box-shadow:0 1px 0 rgba(0,0,0,.02)}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 16px;margin-top:16px}
+.calc{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px 14px}
 .field{display:flex;flex-direction:column;gap:6px;min-width:0}
 .field.full{grid-column:1/-1}
-label{font-size:.8rem;font-weight:600;color:var(--muted)}
-input,select{font-family:var(--body);font-size:.95rem;color:var(--fg);background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+label{font-size:.78rem;font-weight:600;color:var(--muted)}
+input,select{font-family:var(--body);font-size:1rem;color:var(--fg);background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:11px 12px;width:100%}
 input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
 .seg{display:flex;gap:6px;flex-wrap:wrap}
-.seg button{flex:1 1 auto;min-width:86px;font-family:var(--body);font-size:.85rem;font-weight:600;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);cursor:pointer}
+.seg button{flex:1 1 auto;min-width:80px;font-family:var(--body);font-size:.84rem;font-weight:600;padding:10px 8px;border-radius:11px;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);cursor:pointer}
+.seg button:active{transform:scale(.98)}
 .seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 
 /* result */
-.result{margin-top:18px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
-.result .hd{background:var(--accent);color:var(--accent-ink);padding:16px 18px}
-.result .hd .big{font-family:var(--display);font-weight:800;font-size:2rem;line-height:1.1;letter-spacing:-.02em}
-.result .hd .unit{font-weight:600;font-size:1rem;opacity:.9}
-.result .hd .cap{font-size:.8rem;opacity:.92;margin-top:2px}
+.result{margin-top:16px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line)}
+.result .hd{background:var(--accent);color:var(--accent-ink);padding:18px}
+.result .big{font-family:var(--display);font-weight:800;font-size:2.4rem;line-height:1;letter-spacing:-.02em}
+.result .unit{font-weight:700;font-size:1.05rem;opacity:.92}
+.result .cap{font-size:.82rem;opacity:.92;margin-top:6px}
 .result .bd{padding:14px 18px;background:var(--surface);display:flex;flex-direction:column;gap:10px}
 .rrow{display:flex;gap:10px;align-items:baseline;font-size:.9rem}
-.rrow .k{color:var(--muted);min-width:118px}
-.rrow .v{font-weight:600}
-.flag{display:flex;gap:8px;align-items:flex-start;font-size:.82rem;background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:9px 11px}
+.rrow .k{color:var(--muted);min-width:96px}
+.rrow .v{font-weight:700}
+.flag{display:flex;gap:8px;font-size:.82rem;background:var(--warn-soft);color:var(--warn);border-radius:11px;padding:10px 12px}
 .flag.med{background:var(--accent-soft);color:var(--accent)}
+.note{margin-top:14px;font-size:.8rem;color:var(--muted);line-height:1.55}
 
-/* table */
-section.foods{margin-top:40px}
-.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
-.search{flex:1 1 220px;min-width:0}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
-.chip{font-size:.78rem;font-weight:600;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer}
+/* install hint */
+.install{margin-top:14px;display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:12px 13px;font-size:.82rem}
+.install b{font-family:var(--display)}
+.install .x{margin-left:auto;background:none;border:0;color:var(--muted);font-size:1.1rem;cursor:pointer;line-height:1;padding:0 2px}
+
+/* foods */
+.sticky{position:sticky;top:0;background:var(--bg);padding-top:2px;padding-bottom:10px;z-index:2}
+.search{width:100%;font-size:1rem;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:11px 14px;color:var(--fg)}
+.search:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.chips{display:flex;gap:7px;overflow-x:auto;padding:11px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;font-size:.78rem;font-weight:600;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;white-space:nowrap}
 .chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
-.tablewrap{margin-top:14px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
-table{width:100%;border-collapse:collapse;font-size:.9rem}
-thead th{text-align:left;font-family:var(--body);font-weight:700;font-size:.74rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding:11px 14px;background:var(--surface-2);border-bottom:1px solid var(--line);cursor:pointer;white-space:nowrap}
-thead th.num{text-align:right}
-thead th .ar{opacity:.5;font-size:.7rem}
-tbody td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
-tbody tr:last-child td{border-bottom:0}
-tbody tr:nth-child(even) td{background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
-td.num{text-align:right;font-variant-numeric:tabular-nums}
-td.prot{font-weight:700;color:var(--good)}
-.name{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.vbadge{font-size:.62rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--warn);background:var(--warn-soft);padding:2px 6px;border-radius:5px;cursor:help}
-.cat{font-size:.78rem;color:var(--muted)}
-.empty{padding:26px 14px;text-align:center;color:var(--muted);font-size:.9rem}
-.count{font-size:.78rem;color:var(--muted);margin-top:8px}
+.sortrow{display:flex;align-items:center;gap:8px;margin:4px 0 10px;font-size:.78rem;color:var(--muted)}
+.sortrow button{font-family:var(--body);font-weight:600;font-size:.78rem;color:var(--fg);background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:5px 11px;cursor:pointer}
+.sortrow button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.list{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.food{display:flex;align-items:center;gap:12px;padding:13px 15px;border-bottom:1px solid var(--line);background:none;border-left:0;border-right:0;border-top:0;text-align:left;width:100%;cursor:default}
+.food:last-child{border-bottom:0}
+.food:nth-child(even){background:color-mix(in srgb,var(--surface-2) 40%,transparent)}
+.fl{display:flex;flex-direction:column;min-width:0;flex:1}
+.fn{font-weight:600;font-size:.95rem;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.fc{font-size:.76rem;color:var(--muted);margin-top:1px}
+.vbadge{font-size:.6rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--warn);background:var(--warn-soft);padding:2px 6px;border-radius:5px}
+.fr{text-align:right;flex:0 0 auto}
+.fp{font-family:var(--display);font-weight:800;font-size:1.15rem;color:var(--good);line-height:1;font-variant-numeric:tabular-nums}
+.fpu{font-size:.64rem;color:var(--muted);font-weight:600}
+.fk{display:block;font-size:.74rem;color:var(--muted);margin-top:3px;font-variant-numeric:tabular-nums}
+.count{font-size:.76rem;color:var(--muted);margin-top:10px;text-align:center}
+.empty{padding:30px 14px;text-align:center;color:var(--muted);font-size:.9rem}
+.disc{margin-top:18px;font-size:.76rem;color:var(--muted);line-height:1.55}
 
-footer{margin-top:40px;border-top:1px solid var(--line);padding-block:20px 10px;color:var(--muted);font-size:.8rem}
-footer .dis{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px;color:var(--fg)}
-footer .dis b{font-family:var(--display)}
-.src{font-size:.74rem;line-height:1.6}
-@media (max-width:560px){.grid{grid-template-columns:1fr}.rrow .k{min-width:96px}}
+/* tab bar */
+.tabs{flex:0 0 auto;display:flex;border-top:1px solid var(--line);background:var(--surface)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 0 7px;background:none;border:0;cursor:pointer;color:var(--muted);font-family:var(--body);font-size:.7rem;font-weight:600}
+.tab svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tab[aria-selected="true"]{color:var(--accent)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
-<header class="top">
-  <div class="wrap">
+<div class="app">
+  <header class="hdr gut">
     <div class="brand"><span class="word">Uncoding<b>Fit</b></span> <span class="sub">de UncodingWorld</span></div>
-    <div class="spacer"></div>
-    <button class="tbtn" id="theme" title="Cambiar tema" aria-label="Cambiar tema">◐</button>
-  </div>
-</header>
+    <div class="sp"></div>
+    <button class="tbtn" id="theme" aria-label="Cambiar tema">◐</button>
+  </header>
 
-<main class="wrap">
-  <p class="eyebrow">Proteína diaria</p>
-  <h1>¿Cuánta proteína necesitas?</h1>
-  <p class="lead">Calcula tu objetivo diario de proteína según tu actividad y tu meta, y consulta cuánta aporta cada alimento. Gratis, sin cuentas y sin enviar tus datos a ningún sitio.</p>
+  <!-- PANTALLA: CALCULAR -->
+  <section class="screen gut" id="scr-calcular" role="tabpanel" aria-label="Calcular proteína">
+    <h1 class="stitle">Tu proteína diaria</h1>
+    <p class="ssub">Ajusta tus datos y objetivo. El cálculo es instantáneo.</p>
 
-  <!-- CALCULADORA -->
-  <div class="calc">
-    <div class="grid">
-      <div class="field">
-        <label for="sexo">Sexo</label>
-        <select id="sexo"><option value="mujer">Mujer</option><option value="hombre">Hombre</option></select>
-      </div>
-      <div class="field">
-        <label for="edad">Edad (años)</label>
-        <input id="edad" type="number" inputmode="numeric" min="14" max="100" value="30">
-      </div>
-      <div class="field">
-        <label for="altura">Altura (cm)</label>
-        <input id="altura" type="number" inputmode="numeric" min="120" max="220" value="168">
-      </div>
-      <div class="field">
-        <label for="peso">Peso (kg)</label>
-        <input id="peso" type="number" inputmode="decimal" min="35" max="250" value="65">
-      </div>
-      <div class="field full">
-        <label>Nivel de actividad</label>
-        <div class="seg" id="actividad">
-          <button type="button" data-v="sedentario">Sedentario</button>
-          <button type="button" data-v="ligero">Ligero</button>
-          <button type="button" data-v="moderado" aria-pressed="true">Moderado</button>
-          <button type="button" data-v="alto">Alto</button>
+    <div class="calc">
+      <div class="grid">
+        <div class="field">
+          <label for="sexo">Sexo</label>
+          <select id="sexo"><option value="mujer">Mujer</option><option value="hombre">Hombre</option></select>
         </div>
-      </div>
-      <div class="field full">
-        <label>Objetivo</label>
-        <div class="seg" id="objetivo">
-          <button type="button" data-v="mantener">Mantener</button>
-          <button type="button" data-v="ganar_musculo" aria-pressed="true">Ganar músculo</button>
-          <button type="button" data-v="perder_grasa">Perder grasa</button>
+        <div class="field">
+          <label for="edad">Edad</label>
+          <input id="edad" type="number" inputmode="numeric" min="14" max="100" value="30">
+        </div>
+        <div class="field">
+          <label for="altura">Altura (cm)</label>
+          <input id="altura" type="number" inputmode="numeric" min="120" max="220" value="168">
+        </div>
+        <div class="field">
+          <label for="peso">Peso (kg)</label>
+          <input id="peso" type="number" inputmode="decimal" min="35" max="250" value="65">
+        </div>
+        <div class="field full">
+          <label>Actividad</label>
+          <div class="seg" id="actividad">
+            <button type="button" data-v="sedentario">Sedentario</button>
+            <button type="button" data-v="ligero">Ligero</button>
+            <button type="button" data-v="moderado" aria-pressed="true">Moderado</button>
+            <button type="button" data-v="alto">Alto</button>
+          </div>
+        </div>
+        <div class="field full">
+          <label>Objetivo</label>
+          <div class="seg" id="objetivo">
+            <button type="button" data-v="mantener">Mantener</button>
+            <button type="button" data-v="ganar_musculo" aria-pressed="true">Ganar músculo</button>
+            <button type="button" data-v="perder_grasa">Perder grasa</button>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="result" id="result" aria-live="polite"></div>
-  </div>
+    <p class="note">La proteína se reparte mejor en 3–4 comidas a lo largo del día. Los valores son un rango orientativo, no una cifra exacta.</p>
 
-  <!-- TABLA DE ALIMENTOS -->
-  <section class="foods">
-    <p class="eyebrow">Tabla de alimentos</p>
-    <h2>Proteína por alimento</h2>
-    <div class="tools">
-      <input class="search" id="search" type="search" placeholder="Buscar alimento… (p. ej. pollo, lentejas, atún)" autocomplete="off">
+    <div class="install" id="install" hidden>
+      <div><b>Instálala como app.</b> En el móvil: menú del navegador → <span id="installhow">“Añadir a pantalla de inicio”</span>. Se abre a pantalla completa, con su icono y sin barra.</div>
+      <button class="x" id="installx" aria-label="Cerrar">×</button>
     </div>
-    <div class="chips" id="chips"></div>
-    <div class="tablewrap">
-      <table>
-        <thead><tr>
-          <th data-sort="nombre">Alimento <span class="ar"></span></th>
-          <th data-sort="categoria">Categoría <span class="ar"></span></th>
-          <th class="num" data-sort="proteina_g">Prot. /100 g <span class="ar">▼</span></th>
-          <th class="num" data-sort="kcal">kcal <span class="ar"></span></th>
-        </tr></thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
-    <div class="count" id="count"></div>
   </section>
 
-  <footer>
-    <div class="dis"><b>Aviso.</b> Esta herramienta es orientativa y no sustituye el consejo de un profesional sanitario o dietista. Ante patología renal, embarazo, objetivos específicos o dudas, consulta con un profesional.</div>
-    <div class="src">Valores nutricionales de referencia de dominio público (USDA FoodData Central) contrastados con BEDCA para alimentos españoles. Son datos nutricionales, no una reproducción de ninguna base de datos. · UncodingFit, parte del ecosistema Uncoding.</div>
-  </footer>
-</main>
+  <!-- PANTALLA: ALIMENTOS -->
+  <section class="screen gut" id="scr-alimentos" role="tabpanel" aria-label="Alimentos" hidden>
+    <h2 class="stitle">Proteína por alimento</h2>
+    <p class="ssub">Valores por 100 g. Busca o filtra por tipo.</p>
+    <div class="sticky">
+      <input class="search" id="search" type="search" placeholder="Buscar… pollo, lentejas, atún" autocomplete="off">
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="sortrow">
+      <span>Ordenar:</span>
+      <button id="sortP" aria-pressed="true">Proteína ↓</button>
+      <button id="sortN" aria-pressed="false">Nombre A–Z</button>
+    </div>
+    <div class="list" id="list"></div>
+    <div class="count" id="count"></div>
+    <p class="disc"><b>Aviso.</b> Herramienta orientativa; no sustituye el consejo de un profesional sanitario o dietista. Datos de referencia de dominio público (USDA) contrastados con BEDCA.</p>
+  </section>
+
+  <!-- TAB BAR -->
+  <nav class="tabs" role="tablist">
+    <button class="tab" data-scr="calcular" role="tab" aria-selected="true">
+      <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="8" y2="11"/><line x1="12" y1="11" x2="12" y2="11"/><line x1="16" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="8" y2="15"/><line x1="12" y1="15" x2="12" y2="15"/></svg>
+      Calcular
+    </button>
+    <button class="tab" data-scr="alimentos" role="tab" aria-selected="false">
+      <svg viewBox="0 0 24 24"><path d="M3 3v7a3 3 0 0 0 6 0V3"/><line x1="6" y1="10" x2="6" y2="21"/><path d="M17 3c-1.5 0-3 1.8-3 5s1.5 4 3 4 3-.8 3-4-1.5-5-3-5z"/><line x1="17" y1="12" x2="17" y2="21"/></svg>
+      Alimentos
+    </button>
+  </nav>
+</div>
 
 <script>
 const ALIMENTOS = [{"nombre": "Pechuga de pollo (cruda)", "categoria": "carnes", "proteina_g": 23, "kcal": 120}, {"nombre": "Muslo de pollo sin piel (crudo)", "categoria": "carnes", "proteina_g": 19, "kcal": 135}, {"nombre": "Pechuga de pavo (cruda)", "categoria": "carnes", "proteina_g": 24, "kcal": 105}, {"nombre": "Ternera magra (cruda)", "categoria": "carnes", "proteina_g": 21, "kcal": 130}, {"nombre": "Solomillo de cerdo (crudo)", "categoria": "carnes", "proteina_g": 21, "kcal": 120}, {"nombre": "Lomo de cerdo (crudo)", "categoria": "carnes", "proteina_g": 21, "kcal": 140}, {"nombre": "Conejo (crudo)", "categoria": "carnes", "proteina_g": 21, "kcal": 130}, {"nombre": "Cordero magro (crudo)", "categoria": "carnes", "proteina_g": 20, "kcal": 160}, {"nombre": "Carne picada de ternera (cruda)", "categoria": "carnes", "proteina_g": 18, "kcal": 215, "verificar": true}, {"nombre": "Hígado de ternera", "categoria": "carnes", "proteina_g": 20, "kcal": 135}, {"nombre": "Jamón serrano", "categoria": "embutidos", "proteina_g": 30, "kcal": 240, "verificar": true}, {"nombre": "Jamón cocido (york)", "categoria": "embutidos", "proteina_g": 18, "kcal": 110, "verificar": true}, {"nombre": "Pavo en fiambre", "categoria": "embutidos", "proteina_g": 18, "kcal": 100, "verificar": true}, {"nombre": "Lacón", "categoria": "embutidos", "proteina_g": 18, "kcal": 160, "verificar": true}, {"nombre": "Chorizo", "categoria": "embutidos", "proteina_g": 24, "kcal": 455, "verificar": true}, {"nombre": "Salchichón", "categoria": "embutidos", "proteina_g": 26, "kcal": 420, "verificar": true}, {"nombre": "Bacon / panceta", "categoria": "embutidos", "proteina_g": 13, "kcal": 400, "verificar": true}, {"nombre": "Salchicha fresca de cerdo", "categoria": "embutidos", "proteina_g": 12, "kcal": 290, "verificar": true}, {"nombre": "Merluza", "categoria": "pescados", "proteina_g": 17, "kcal": 70}, {"nombre": "Bacalao fresco", "categoria": "pescados", "proteina_g": 18, "kcal": 82}, {"nombre": "Bacalao salado desalado", "categoria": "pescados", "proteina_g": 29, "kcal": 135, "verificar": true}, {"nombre": "Atún fresco", "categoria": "pescados", "proteina_g": 23, "kcal": 110}, {"nombre": "Atún en lata al natural (escurrido)", "categoria": "pescados", "proteina_g": 26, "kcal": 115}, {"nombre": "Atún en lata en aceite (escurrido)", "categoria": "pescados", "proteina_g": 25, "kcal": 200, "verificar": true}, {"nombre": "Salmón", "categoria": "pescados", "proteina_g": 20, "kcal": 180}, {"nombre": "Sardina", "categoria": "pescados", "proteina_g": 20, "kcal": 170}, {"nombre": "Caballa", "categoria": "pescados", "proteina_g": 19, "kcal": 170}, {"nombre": "Boquerón / anchoa fresca", "categoria": "pescados", "proteina_g": 20, "kcal": 130}, {"nombre": "Dorada", "categoria": "pescados", "proteina_g": 20, "kcal": 100}, {"nombre": "Lubina", "categoria": "pescados", "proteina_g": 18, "kcal": 95}, {"nombre": "Lenguado", "categoria": "pescados", "proteina_g": 17, "kcal": 75}, {"nombre": "Trucha", "categoria": "pescados", "proteina_g": 20, "kcal": 120}, {"nombre": "Gambas / langostinos", "categoria": "mariscos", "proteina_g": 20, "kcal": 85}, {"nombre": "Mejillones", "categoria": "mariscos", "proteina_g": 12, "kcal": 85}, {"nombre": "Calamar", "categoria": "mariscos", "proteina_g": 16, "kcal": 80}, {"nombre": "Pulpo", "categoria": "mariscos", "proteina_g": 15, "kcal": 82}, {"nombre": "Almejas", "categoria": "mariscos", "proteina_g": 13, "kcal": 75}, {"nombre": "Surimi / palitos de cangrejo", "categoria": "mariscos", "proteina_g": 8, "kcal": 95, "verificar": true}, {"nombre": "Huevo entero", "categoria": "huevos", "proteina_g": 13, "kcal": 143}, {"nombre": "Clara de huevo", "categoria": "huevos", "proteina_g": 11, "kcal": 52}, {"nombre": "Yema de huevo", "categoria": "huevos", "proteina_g": 16, "kcal": 320}, {"nombre": "Clara pasteurizada líquida", "categoria": "huevos", "proteina_g": 11, "kcal": 52}, {"nombre": "Leche entera", "categoria": "lacteos", "proteina_g": 3.2, "kcal": 61}, {"nombre": "Leche semidesnatada", "categoria": "lacteos", "proteina_g": 3.3, "kcal": 46}, {"nombre": "Leche desnatada", "categoria": "lacteos", "proteina_g": 3.4, "kcal": 34}, {"nombre": "Yogur natural", "categoria": "lacteos", "proteina_g": 3.5, "kcal": 61}, {"nombre": "Yogur natural desnatado", "categoria": "lacteos", "proteina_g": 4, "kcal": 40}, {"nombre": "Yogur griego", "categoria": "lacteos", "proteina_g": 6, "kcal": 97, "verificar": true}, {"nombre": "Yogur proteico (tipo skyr)", "categoria": "lacteos", "proteina_g": 10, "kcal": 60, "verificar": true}, {"nombre": "Queso fresco batido 0%", "categoria": "lacteos", "proteina_g": 8, "kcal": 50, "verificar": true}, {"nombre": "Requesón / ricotta", "categoria": "lacteos", "proteina_g": 11, "kcal": 150, "verificar": true}, {"nombre": "Queso de Burgos", "categoria": "lacteos", "proteina_g": 15, "kcal": 175, "verificar": true}, {"nombre": "Queso curado (manchego)", "categoria": "lacteos", "proteina_g": 30, "kcal": 390, "verificar": true}, {"nombre": "Mozzarella", "categoria": "lacteos", "proteina_g": 22, "kcal": 280, "verificar": true}, {"nombre": "Parmesano", "categoria": "lacteos", "proteina_g": 36, "kcal": 400, "verificar": true}, {"nombre": "Queso cheddar", "categoria": "lacteos", "proteina_g": 25, "kcal": 400, "verificar": true}, {"nombre": "Kéfir", "categoria": "lacteos", "proteina_g": 3.3, "kcal": 60}, {"nombre": "Cuajada", "categoria": "lacteos", "proteina_g": 5, "kcal": 90, "verificar": true}, {"nombre": "Lentejas cocidas", "categoria": "legumbres", "proteina_g": 9, "kcal": 115}, {"nombre": "Lentejas (crudas)", "categoria": "legumbres", "proteina_g": 24, "kcal": 340}, {"nombre": "Garbanzos cocidos", "categoria": "legumbres", "proteina_g": 9, "kcal": 160}, {"nombre": "Garbanzos (crudos)", "categoria": "legumbres", "proteina_g": 19, "kcal": 360}, {"nombre": "Judías blancas cocidas", "categoria": "legumbres", "proteina_g": 9, "kcal": 125}, {"nombre": "Alubias rojas cocidas", "categoria": "legumbres", "proteina_g": 9, "kcal": 127}, {"nombre": "Guisantes cocidos", "categoria": "legumbres", "proteina_g": 5, "kcal": 84}, {"nombre": "Soja cocida", "categoria": "legumbres", "proteina_g": 17, "kcal": 170}, {"nombre": "Edamame", "categoria": "legumbres", "proteina_g": 11, "kcal": 120}, {"nombre": "Tofu firme", "categoria": "legumbres", "proteina_g": 12, "kcal": 120, "verificar": true}, {"nombre": "Tempeh", "categoria": "legumbres", "proteina_g": 19, "kcal": 190, "verificar": true}, {"nombre": "Soja texturizada (seca)", "categoria": "legumbres", "proteina_g": 50, "kcal": 340, "verificar": true}, {"nombre": "Hummus", "categoria": "legumbres", "proteina_g": 8, "kcal": 170, "verificar": true}, {"nombre": "Avena (copos)", "categoria": "cereales", "proteina_g": 13, "kcal": 370}, {"nombre": "Pan integral", "categoria": "cereales", "proteina_g": 9, "kcal": 240, "verificar": true}, {"nombre": "Pan blanco", "categoria": "cereales", "proteina_g": 8, "kcal": 265, "verificar": true}, {"nombre": "Pan de molde", "categoria": "cereales", "proteina_g": 8, "kcal": 260, "verificar": true}, {"nombre": "Arroz blanco cocido", "categoria": "cereales", "proteina_g": 2.7, "kcal": 130}, {"nombre": "Arroz integral cocido", "categoria": "cereales", "proteina_g": 2.6, "kcal": 112}, {"nombre": "Pasta cocida", "categoria": "cereales", "proteina_g": 5, "kcal": 158}, {"nombre": "Pasta integral cocida", "categoria": "cereales", "proteina_g": 6, "kcal": 150}, {"nombre": "Quinoa cocida", "categoria": "cereales", "proteina_g": 4.4, "kcal": 120}, {"nombre": "Cuscús cocido", "categoria": "cereales", "proteina_g": 3.8, "kcal": 112}, {"nombre": "Maíz dulce", "categoria": "cereales", "proteina_g": 3.3, "kcal": 96}, {"nombre": "Trigo sarraceno (crudo)", "categoria": "cereales", "proteina_g": 13, "kcal": 340}, {"nombre": "Seitán", "categoria": "cereales", "proteina_g": 24, "kcal": 150, "verificar": true}, {"nombre": "Almendras", "categoria": "frutos_secos", "proteina_g": 21, "kcal": 580}, {"nombre": "Nueces", "categoria": "frutos_secos", "proteina_g": 15, "kcal": 650}, {"nombre": "Cacahuetes", "categoria": "frutos_secos", "proteina_g": 26, "kcal": 570}, {"nombre": "Pistachos", "categoria": "frutos_secos", "proteina_g": 20, "kcal": 560}, {"nombre": "Anacardos", "categoria": "frutos_secos", "proteina_g": 18, "kcal": 555}, {"nombre": "Avellanas", "categoria": "frutos_secos", "proteina_g": 15, "kcal": 628}, {"nombre": "Semillas de calabaza", "categoria": "semillas", "proteina_g": 30, "kcal": 560}, {"nombre": "Semillas de girasol", "categoria": "semillas", "proteina_g": 21, "kcal": 580}, {"nombre": "Semillas de chía", "categoria": "semillas", "proteina_g": 17, "kcal": 490}, {"nombre": "Semillas de cáñamo", "categoria": "semillas", "proteina_g": 31, "kcal": 550}, {"nombre": "Crema de cacahuete", "categoria": "frutos_secos", "proteina_g": 25, "kcal": 590, "verificar": true}, {"nombre": "Espinacas", "categoria": "verduras", "proteina_g": 2.9, "kcal": 23}, {"nombre": "Brócoli", "categoria": "verduras", "proteina_g": 2.8, "kcal": 34}, {"nombre": "Champiñones", "categoria": "verduras", "proteina_g": 3.1, "kcal": 22}, {"nombre": "Espárragos", "categoria": "verduras", "proteina_g": 2.2, "kcal": 20}, {"nombre": "Coles de Bruselas", "categoria": "verduras", "proteina_g": 3.4, "kcal": 43}, {"nombre": "Alcachofa", "categoria": "verduras", "proteina_g": 3.3, "kcal": 47}, {"nombre": "Patata cocida", "categoria": "verduras", "proteina_g": 2, "kcal": 87}, {"nombre": "Boniato", "categoria": "verduras", "proteina_g": 1.6, "kcal": 86}, {"nombre": "Aguacate", "categoria": "verduras", "proteina_g": 2, "kcal": 160}, {"nombre": "Proteína de suero (whey, polvo)", "categoria": "suplementos", "proteina_g": 80, "kcal": 380, "verificar": true}, {"nombre": "Caseína (polvo)", "categoria": "suplementos", "proteina_g": 80, "kcal": 370, "verificar": true}, {"nombre": "Proteína vegetal (guisante, polvo)", "categoria": "suplementos", "proteina_g": 75, "kcal": 370, "verificar": true}, {"nombre": "Levadura nutricional", "categoria": "suplementos", "proteina_g": 50, "kcal": 350, "verificar": true}, {"nombre": "Barrita proteica", "categoria": "suplementos", "proteina_g": 30, "kcal": 350, "verificar": true}, {"nombre": "Gelatina (polvo)", "categoria": "suplementos", "proteina_g": 86, "kcal": 340}];
 const MODELO = {"_meta": {"nombre": "UncodingFit - modelo de calculo de proteina (v1)", "version": "1.0.0", "base": "Proteina diaria = peso_kg * factor_g_kg. El factor sale del cruce actividad x objetivo. Se devuelve SIEMPRE un rango (minimo-maximo), no una cifra unica.", "unidad_factor": "g de proteina por kg de peso corporal y dia", "disclaimer": "Orientativo. No es consejo medico ni dietetico. Ante dudas, patologia renal u objetivos especificos, consultar a un profesional."}, "campos_formulario": {"sexo": ["mujer", "hombre"], "edad": "anios (entero)", "altura_cm": "numero", "peso_kg": "numero", "actividad": ["sedentario", "ligero", "moderado", "alto"], "objetivo": ["mantener", "ganar_musculo", "perder_grasa"]}, "nota_sexo_altura_edad": "En v1 el calculo de PROTEINA depende de peso, actividad, objetivo y edad. Sexo y altura se recogen para el futuro modo CALORIAS/metabolismo basal (formula Mifflin-St Jeor), donde si son imprescindibles. Guardarlos ya evita pedirlos de nuevo.", "factores_g_kg": {"mantener": {"sedentario": [0.8, 1.0], "ligero": [1.0, 1.4], "moderado": [1.2, 1.6], "alto": [1.4, 1.8]}, "ganar_musculo": {"sedentario": [1.2, 1.6], "ligero": [1.4, 1.8], "moderado": [1.6, 2.0], "alto": [1.8, 2.2]}, "perder_grasa": {"sedentario": [1.2, 1.6], "ligero": [1.4, 1.8], "moderado": [1.6, 2.2], "alto": [1.8, 2.4]}}, "ajuste_edad": {"regla": "En mayores de 65 anios la sintesis proteica es menos eficiente: subir el suelo del rango a 1.0 g/kg como minimo.", "umbral_edad": 65, "suelo_minimo_g_kg": 1.0}, "ajuste_peso_alto_porcentaje_graso": {"aviso": "El factor g/kg se aplica sobre peso corporal. En personas con sobrepeso/obesidad marcada, usar el peso real sobreestima la proteina. v1 no mide % graso, asi que se usa peso real pero se recomienda mostrar un aviso cuando el IMC sea muy alto.", "imc_aviso": 30}, "actividad_descripcion": {"sedentario": "Poco o nada de ejercicio; trabajo de oficina.", "ligero": "Ejercicio ligero 1-3 dias/semana.", "moderado": "Ejercicio moderado 3-5 dias/semana.", "alto": "Entreno intenso 6-7 dias/semana o trabajo fisico."}, "reparto_comidas": {"regla": "Repartir el total diario en 3-4 tomas para optimizar la sintesis proteica.", "objetivo_por_toma_g": [20, 40], "nota": "Mostrar: 'reparte en 3-4 comidas de ~X g cada una'."}, "salida": {"proteina_dia_g": "rango = [round(peso*factor_min), round(peso*factor_max)]", "por_comida_g": "rango_dia / num_comidas (sugerir 4)", "mensaje_disclaimer": true}, "pseudocodigo": ["f = factores_g_kg[objetivo][actividad]", "min_gkg, max_gkg = f[0], f[1]", "if edad >= 65: min_gkg = max(min_gkg, 1.0)", "prot_min = round(peso_kg * min_gkg)", "prot_max = round(peso_kg * max_gkg)", "imc = peso_kg / (altura_cm/100)**2", "aviso_imc = imc >= 30", "por_comida = (round(prot_min/4), round(prot_max/4))"]};
-
 const CATLABEL = {carnes:"Carnes",embutidos:"Embutidos",pescados:"Pescados",mariscos:"Mariscos",huevos:"Huevos",lacteos:"Lácteos",legumbres:"Legumbres",cereales:"Cereales",frutos_secos:"Frutos secos",semillas:"Semillas",verduras:"Verduras",suplementos:"Suplementos"};
 const OBJLABEL = {mantener:"Mantener peso",ganar_musculo:"Ganar músculo",perder_grasa:"Perder grasa"};
 
-/* ---------- estado persistente (solo en este navegador) ---------- */
-const store = {
-  get(k,d){try{const v=localStorage.getItem("ufit_"+k);return v===null?d:JSON.parse(v);}catch(e){return d;}},
-  set(k,v){try{localStorage.setItem("ufit_"+k,JSON.stringify(v));}catch(e){}}
-};
+const store={get(k,d){try{const v=localStorage.getItem("ufit_"+k);return v===null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem("ufit_"+k,JSON.stringify(v));}catch(e){}}};
 
-/* ---------- tema ---------- */
-(function(){
-  const saved = store.get("theme",null);
-  if(saved) document.documentElement.setAttribute("data-theme",saved);
-  document.getElementById("theme").addEventListener("click",()=>{
-    const cur = document.documentElement.getAttribute("data-theme");
-    const dark = cur ? cur==="dark" : matchMedia("(prefers-color-scheme:dark)").matches;
-    const next = dark ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme",next);
-    store.set("theme",next);
-  });
-})();
+/* tema */
+(function(){const s=store.get("theme",null);if(s)document.documentElement.setAttribute("data-theme",s);
+document.getElementById("theme").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");const dark=c?c==="dark":matchMedia("(prefers-color-scheme:dark)").matches;const n=dark?"light":"dark";document.documentElement.setAttribute("data-theme",n);store.set("theme",n);});})();
 
-/* ---------- segmentos ---------- */
-function seg(id){
-  const box = document.getElementById(id);
-  box.addEventListener("click",e=>{
-    const b = e.target.closest("button"); if(!b) return;
-    [...box.children].forEach(x=>x.setAttribute("aria-pressed","false"));
-    b.setAttribute("aria-pressed","true");
-    calcular();
-  });
-  return ()=>box.querySelector('[aria-pressed="true"]').dataset.v;
-}
-const getAct = seg("actividad");
-const getObj = seg("objetivo");
+/* pestañas + rutas por hash */
+const screens={calcular:document.getElementById("scr-calcular"),alimentos:document.getElementById("scr-alimentos")};
+const tabs=[...document.querySelectorAll(".tab")];
+function show(name){if(!screens[name])name="calcular";for(const k in screens)screens[k].hidden=(k!==name);tabs.forEach(t=>t.setAttribute("aria-selected",t.dataset.scr===name?"true":"false"));screens[name].scrollTop=0;if(location.hash.slice(1)!==name)history.replaceState(null,"","#"+name);}
+tabs.forEach(t=>t.addEventListener("click",()=>show(t.dataset.scr)));
+window.addEventListener("hashchange",()=>show(location.hash.slice(1)));
 
-/* ---------- cálculo ---------- */
+/* segmentos */
+function seg(id){const box=document.getElementById(id);box.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;[...box.children].forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");calcular();});return ()=>box.querySelector('[aria-pressed="true"]').dataset.v;}
+const getAct=seg("actividad"),getObj=seg("objetivo");
+
+/* cálculo */
 function calcular(){
-  const sexo=document.getElementById("sexo").value;
-  const edad=+document.getElementById("edad").value||0;
-  const altura=+document.getElementById("altura").value||0;
-  const peso=+document.getElementById("peso").value||0;
-  const act=getAct(), obj=getObj();
+  const edad=+document.getElementById("edad").value||0,altura=+document.getElementById("altura").value||0,peso=+document.getElementById("peso").value||0;
+  const sexo=document.getElementById("sexo").value,act=getAct(),obj=getObj();
   store.set("form",{sexo,edad,altura,peso,act,obj});
-
   const box=document.getElementById("result");
   if(peso<30||peso>300){box.innerHTML='<div class="bd"><div class="flag med">Introduce un peso válido para ver el cálculo.</div></div>';return;}
-
   let [lo,hi]=MODELO.factores_g_kg[obj][act];
-  if(edad>=MODELO.ajuste_edad.umbral_edad) lo=Math.max(lo,MODELO.ajuste_edad.suelo_minimo_g_kg);
-  const pmin=Math.round(peso*lo), pmax=Math.round(peso*hi);
-  const cmin=Math.round(pmin/4), cmax=Math.round(pmax/4);
-
-  let imcFlag="";
-  if(altura>=120){const imc=peso/Math.pow(altura/100,2);
-    if(imc>=MODELO.ajuste_peso_alto_porcentaje_graso.imc_aviso)
-      imcFlag='<div class="flag">Con un IMC alto, calcular sobre el peso total puede sobreestimar la proteína. Usa estos valores como techo orientativo.</div>';}
-
-  box.innerHTML=`
-    <div class="hd">
-      <div><span class="big tnum">${pmin}–${pmax}</span> <span class="unit">g/día</span></div>
-      <div class="cap">${OBJLABEL[obj]} · actividad ${act} · ${lo}–${hi} g por kg</div>
-    </div>
-    <div class="bd">
-      <div class="rrow"><span class="k">Por comida</span><span class="v tnum">${cmin}–${cmax} g</span><span class="k">en 3–4 tomas</span></div>
-      <div class="rrow"><span class="k">Tu peso</span><span class="v tnum">${peso} kg</span></div>
-      ${imcFlag}
-    </div>`;
+  if(edad>=MODELO.ajuste_edad.umbral_edad)lo=Math.max(lo,MODELO.ajuste_edad.suelo_minimo_g_kg);
+  const pmin=Math.round(peso*lo),pmax=Math.round(peso*hi),cmin=Math.round(pmin/4),cmax=Math.round(pmax/4);
+  let imcFlag="";if(altura>=120){const imc=peso/Math.pow(altura/100,2);if(imc>=MODELO.ajuste_peso_alto_porcentaje_graso.imc_aviso)imcFlag='<div class="flag">Con un IMC alto, calcular sobre el peso total puede sobreestimar la proteína. Tómalo como techo orientativo.</div>';}
+  box.innerHTML=`<div class="hd"><div><span class="big tnum">${pmin}–${pmax}</span> <span class="unit">g/día</span></div><div class="cap">${OBJLABEL[obj]} · actividad ${act} · ${lo}–${hi} g/kg</div></div><div class="bd"><div class="rrow"><span class="k">Por comida</span><span class="v tnum">${cmin}–${cmax} g</span><span class="k">en 3–4 tomas</span></div><div class="rrow"><span class="k">Tu peso</span><span class="v tnum">${peso} kg</span></div>${imcFlag}</div>`;
 }
 ["sexo","edad","altura","peso"].forEach(id=>document.getElementById(id).addEventListener("input",calcular));
+(function(){const f=store.get("form",null);if(!f)return;try{document.getElementById("sexo").value=f.sexo;document.getElementById("edad").value=f.edad;document.getElementById("altura").value=f.altura;document.getElementById("peso").value=f.peso;const setSeg=(id,v)=>{const b=document.getElementById(id);[...b.children].forEach(x=>x.setAttribute("aria-pressed",x.dataset.v===v?"true":"false"));};setSeg("actividad",f.act);setSeg("objetivo",f.obj);}catch(e){}})();
 
-/* restaurar formulario guardado */
-(function(){
-  const f=store.get("form",null); if(!f) return;
-  try{
-    document.getElementById("sexo").value=f.sexo;
-    document.getElementById("edad").value=f.edad;
-    document.getElementById("altura").value=f.altura;
-    document.getElementById("peso").value=f.peso;
-    const setSeg=(id,v)=>{const box=document.getElementById(id);[...box.children].forEach(x=>x.setAttribute("aria-pressed",x.dataset.v===v?"true":"false"));};
-    setSeg("actividad",f.act); setSeg("objetivo",f.obj);
-  }catch(e){}
-})();
-
-/* ---------- tabla ---------- */
-let sortKey="proteina_g", sortDir=-1, cat="todas", q="";
-const tbody=document.getElementById("tbody"), countEl=document.getElementById("count");
-
-/* chips de categoría */
-(function(){
-  const cats=["todas",...Object.keys(CATLABEL).filter(c=>ALIMENTOS.some(a=>a.categoria===c))];
-  const box=document.getElementById("chips");
-  box.innerHTML=cats.map(c=>`<button class="chip" data-c="${c}" aria-pressed="${c==="todas"}">${c==="todas"?"Todas":CATLABEL[c]}</button>`).join("");
-  box.addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;cat=b.dataset.c;[...box.children].forEach(x=>x.setAttribute("aria-pressed",x.dataset.c===cat?"true":"false"));render();});
-})();
-
+/* tabla/lista */
+let sortKey="proteina_g",cat="todas",q="";
+const listEl=document.getElementById("list"),countEl=document.getElementById("count");
+(function(){const cats=["todas",...Object.keys(CATLABEL).filter(c=>ALIMENTOS.some(a=>a.categoria===c))];const box=document.getElementById("chips");box.innerHTML=cats.map(c=>`<button class="chip" data-c="${c}" aria-pressed="${c==="todas"}">${c==="todas"?"Todas":CATLABEL[c]}</button>`).join("");box.addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;cat=b.dataset.c;[...box.children].forEach(x=>x.setAttribute("aria-pressed",x.dataset.c===cat?"true":"false"));render();});})();
 document.getElementById("search").addEventListener("input",e=>{q=e.target.value.toLowerCase().trim();render();});
-
-document.querySelectorAll("thead th[data-sort]").forEach(th=>{
-  th.addEventListener("click",()=>{
-    const k=th.dataset.sort;
-    if(sortKey===k){sortDir*=-1;}else{sortKey=k;sortDir=(k==="nombre"||k==="categoria")?1:-1;}
-    document.querySelectorAll("thead th .ar").forEach(a=>a.textContent="");
-    th.querySelector(".ar").textContent=sortDir<0?"▼":"▲";
-    render();
-  });
-});
-
+const sP=document.getElementById("sortP"),sN=document.getElementById("sortN");
+sP.addEventListener("click",()=>{sortKey="proteina_g";sP.setAttribute("aria-pressed","true");sN.setAttribute("aria-pressed","false");render();});
+sN.addEventListener("click",()=>{sortKey="nombre";sN.setAttribute("aria-pressed","true");sP.setAttribute("aria-pressed","false");render();});
 function render(){
   let rows=ALIMENTOS.filter(a=>(cat==="todas"||a.categoria===cat)&&(q===""||a.nombre.toLowerCase().includes(q)));
-  rows.sort((a,b)=>{
-    let x=a[sortKey],y=b[sortKey];
-    if(typeof x==="string"){x=x.toLowerCase();y=y.toLowerCase();return x<y?-sortDir:x>y?sortDir:0;}
-    return (x-y)*sortDir;
-  });
-  if(!rows.length){tbody.innerHTML='<tr><td colspan="4" class="empty">Sin resultados para esa búsqueda.</td></tr>';countEl.textContent="";return;}
-  tbody.innerHTML=rows.map(a=>`
-    <tr>
-      <td><span class="name">${a.nombre}${a.verificar?'<span class="vbadge" title="Valor con alta variabilidad: conviene verificar">verificar</span>':''}</span></td>
-      <td class="cat">${CATLABEL[a.categoria]||a.categoria}</td>
-      <td class="num prot tnum">${a.proteina_g}</td>
-      <td class="num tnum">${a.kcal}</td>
-    </tr>`).join("");
-  countEl.textContent=`${rows.length} de ${ALIMENTOS.length} alimentos · valores por 100 g`;
+  rows.sort((a,b)=>sortKey==="nombre"?a.nombre.localeCompare(b.nombre,"es"):b.proteina_g-a.proteina_g);
+  if(!rows.length){listEl.innerHTML='<div class="empty">Sin resultados para esa búsqueda.</div>';countEl.textContent="";return;}
+  listEl.innerHTML=rows.map(a=>`<div class="food"><div class="fl"><span class="fn">${a.nombre}${a.verificar?'<span class="vbadge" title="Valor con alta variabilidad">verificar</span>':''}</span><span class="fc">${CATLABEL[a.categoria]||a.categoria}</span></div><div class="fr"><span class="fp">${a.proteina_g}<span class="fpu"> g</span></span><span class="fk">${a.kcal} kcal</span></div></div>`).join("");
+  countEl.textContent=`${rows.length} de ${ALIMENTOS.length} alimentos`;
 }
 
-/* ---------- init ---------- */
-calcular();
-render();
+/* hint de instalación: solo si no está ya instalada y no se cerró antes */
+(function(){
+  const standalone=matchMedia("(display-mode:standalone)").matches||window.navigator.standalone===true;
+  if(standalone||store.get("install_dismissed",false))return;
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  document.getElementById("installhow").textContent=ios?'botón Compartir → “Añadir a pantalla de inicio”':'menú ⋮ → “Instalar aplicación” / “Añadir a pantalla de inicio”';
+  document.getElementById("install").hidden=false;
+  document.getElementById("installx").addEventListener("click",()=>{document.getElementById("install").hidden=true;store.set("install_dismissed",true);});
+})();
 
-/* service worker (solo si el entorno lo permite; inofensivo si no) */
-if("serviceWorker"in navigator){
-  window.addEventListener("load",()=>{navigator.serviceWorker.register("./sw.js").catch(()=>{});});
-}
+/* init */
+show(location.hash.slice(1)||"calcular");
+calcular();render();
+if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 </script>
