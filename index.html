@@ -1,4 +1,13 @@
-<meta name="claude:viewport-fit-sides" content="cover">
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="UncodingFit">
+<style>html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>UncodingFit</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0d0f12">
@@ -43,7 +52,7 @@ h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.
 @media (max-width:520px){.app{border-inline:0}}
 
 /* header */
-.hdr{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding-block:12px;border-bottom:1px solid var(--line);background:var(--surface)}
+.hdr{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding-top:max(12px,env(safe-area-inset-top,0px));padding-bottom:12px;border-bottom:1px solid var(--line);background:var(--surface)}
 .brand{display:flex;align-items:baseline;gap:8px;font-family:var(--display);font-weight:800;font-size:1.1rem;letter-spacing:-.02em}
 .brand .word b{color:var(--accent)}
 .brand .sub{font-family:var(--body);font-weight:500;font-size:.68rem;color:var(--muted);letter-spacing:.02em}
@@ -117,12 +126,15 @@ input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;bord
 .disc{margin-top:18px;font-size:.76rem;color:var(--muted);line-height:1.55}
 
 /* tab bar */
-.tabs{flex:0 0 auto;display:flex;border-top:1px solid var(--line);background:var(--surface)}
+.tabs{flex:0 0 auto;display:flex;border-top:1px solid var(--line);background:var(--surface);padding-bottom:env(safe-area-inset-bottom,0px)}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 0 7px;background:none;border:0;cursor:pointer;color:var(--muted);font-family:var(--body);font-size:.7rem;font-weight:600}
 .tab svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .tab[aria-selected="true"]{color:var(--accent)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+</head>
+<body>
+
 
 <div class="app">
   <header class="hdr gut">
@@ -284,3 +296,6 @@ show(location.hash.slice(1)||"calcular");
 calcular();render();
 if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 </script>
+
+</body>
+</html>
