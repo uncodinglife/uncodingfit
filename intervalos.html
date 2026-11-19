@@ -49,7 +49,7 @@ button{font-family:var(--body);cursor:pointer}
 .prog .row{display:flex;gap:18px;margin-top:8px;position:relative;z-index:1}
 .prog .n{font-family:var(--display);font-weight:900;font-size:1.9rem;line-height:1}
 .prog .u{font-size:.78rem;opacity:.9;font-weight:600}
-.prog .more{position:absolute;right:16px;bottom:14px;font-size:.78rem;font-weight:700;opacity:.95}
+.prog .more{position:relative;z-index:1;text-align:right;margin-top:8px;font-size:.78rem;font-weight:700;opacity:.95}
 
 /* opciones */
 .opts{display:flex;gap:8px;margin:14px 0 6px;flex-wrap:wrap}
@@ -74,7 +74,9 @@ button{font-family:var(--body);cursor:pointer}
 .pmin{text-align:right;font-family:var(--display);font-weight:800;font-size:1.05rem;line-height:1}
 .pmin small{display:block;font-family:var(--body);font-size:.66rem;color:var(--muted);font-weight:600}
 .done{position:absolute;top:-7px;right:12px;font-size:.66rem;font-weight:800;background:var(--run);color:#fff;border-radius:999px;padding:2px 8px}
-.edit{flex:0 0 auto;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);width:34px;height:34px;border-radius:10px;font-size:.95rem}
+.up{flex:0 0 auto;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);width:34px;height:34px;border-radius:10px;font-size:1rem;display:grid;place-items:center}
+.badge.txt{font-size:.9rem;letter-spacing:-.02em}
+.edit{flex:0 0 auto;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);width:34px;height:34px;border-radius:10px;font-size:.95rem;display:grid;place-items:center}
 .bar{display:flex;gap:2px;height:9px;border-radius:5px;overflow:hidden;margin-top:11px}
 .bar i{display:block;height:100%}
 .empty{border:1.5px dashed var(--line);border-radius:var(--radius);padding:18px;text-align:center;color:var(--muted);font-size:.85rem}
@@ -127,6 +129,24 @@ button{font-family:var(--body);cursor:pointer}
 .cbtn.main{width:80px;height:80px;background:#fff;color:#0b0f12}
 .cbtn.main svg{width:32px;height:32px}
 .gpsnote{font-size:.72rem;opacity:.7;margin-top:8px;min-height:1em}
+@media (max-width:380px){
+  .pill{font-size:.74rem;padding:6px 10px}.lw{display:none}
+  .pt b{font-size:.94rem}.pt span{font-size:.74rem}.ptop{gap:9px}.badge{width:36px;height:36px}
+  .up,.edit{width:30px;height:30px}.prog .n{font-size:1.6rem}.prog .row{gap:14px}
+  .step button{width:36px;height:36px}.step output{min-width:50px;font-size:1.05rem}
+}
+/* móvil en horizontal: anillo a la izquierda, controles a la derecha */
+@media (orientation:landscape) and (max-height:540px){
+  #scr-run{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto 1fr auto auto;column-gap:22px;align-items:center;
+    padding:max(10px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}
+  .rtop{grid-column:1/-1;max-width:none}
+  .ringwrap{grid-column:1;grid-row:2/5;width:min(68vh,44vw);margin:6px 0 0}
+  .next{grid-column:2;grid-row:2;margin:0;align-self:end}
+  .ctrls{grid-column:2;grid-row:3;margin-top:12px}
+  .gpsnote{grid-column:2;grid-row:4;text-align:center}
+  .cbtn{width:50px;height:50px}.cbtn.main{width:66px;height:66px}
+  .verb{font-size:clamp(1.3rem,6vh,2rem)}.count{font-size:clamp(2.2rem,13vh,3.6rem)}.phint{font-size:.74rem}
+}
 
 /* resumen */
 .sumhero{text-align:center;padding:16px 0 6px;position:relative}
@@ -197,12 +217,17 @@ button{font-family:var(--body);cursor:pointer}
   </div>
   <p class="hint">Durante la sesión deja la app abierta: la pantalla se queda encendida sola. Puedes llevar música a la vez.</p>
 
+  <div id="blocks">
+  <div id="blkPlan">
   <div class="sec"><h2>De 0 a 30 minutos</h2></div>
   <p class="ssub">Haz unas 3 sesiones por nivel y pasa al siguiente cuando lo notes fácil.</p>
   <div class="plans" id="presets"></div>
-
+  </div>
+  <div id="blkMine">
   <div class="sec"><h2>Mis sesiones</h2><button class="add" id="newPlan">+ Crear</button></div>
   <div class="plans" id="customs"></div>
+  </div>
+  </div>
 
   <div class="legend">
     <span style="--c:var(--warm)">Calentar</span><span style="--c:var(--run)">Correr</span><span style="--c:var(--walk)">Caminar</span><span style="--c:var(--cool)">Vuelta a la calma</span>
@@ -215,7 +240,8 @@ button{font-family:var(--body);cursor:pointer}
     <button class="ibtn" data-go="setup" aria-label="Cancelar">←</button>
     <h1 id="edTitle">Nueva sesión</h1>
   </div>
-  <input class="name" id="edName" maxlength="40" placeholder="Nombre (p. ej. Martes por el paseo)">
+  <div style="display:flex;gap:10px;align-items:flex-start"><span class="badge txt" id="edBadge" style="background:#f59e0b;width:50px;height:50px">★</span>
+  <input class="name" id="edName" maxlength="40" placeholder="Nombre (p. ej. Merche 1)" style="flex:1"></div>
   <div id="edFields"></div>
   <div class="preview">
     <div class="tt"><span>Duración total</span><b id="edTotal" class="tnum"></b></div>
@@ -259,7 +285,7 @@ button{font-family:var(--body);cursor:pointer}
 <section id="scr-run" hidden>
   <div class="runbg" id="runbg"></div>
   <div class="rtop">
-    <span class="pill tnum" id="rLeft">--:-- restantes</span>
+    <span class="pill tnum"><span id="rLeft">--:--</span><span class="lw"> restantes</span></span>
     <span class="pill" id="rRound"></span>
     <span class="pill tnum" id="rKm" hidden>0,00 km</span>
   </div>
@@ -353,6 +379,13 @@ function buildSteps(p){
   return s;
 }
 const planTotal=p=>buildSteps(p).slice(1).reduce((a,s)=>a+s.d,0);
+function initials(name){
+  const w=name.trim().split(/\s+/).filter(Boolean);if(!w.length)return "★";
+  const L=x=>x.replace(/[^\p{L}\p{N}]/gu,"").charAt(0).toUpperCase();
+  const num=(name.match(/\d+/)||[""])[0];
+  if(num)return (L(w[0])+num).slice(0,3);          // "Merche 1" → M1
+  return w.slice(0,2).map(L).join("")||"★";         // "Martes paseo" → MP
+}
 const barHTML=p=>buildSteps(p).slice(1).map(s=>`<i style="flex-grow:${s.d};background:${PH[s.k].c}"></i>`).join("");
 
 /* ---------- navegación ---------- */
@@ -370,16 +403,20 @@ function renderSetup(){
   const cnt={};hist.forEach(h=>{if(h.p&&h.c)cnt[h.p]=(cnt[h.p]||0)+1;});
   const card=(p,i,custom)=>`<button class="plan" data-start="${p.id}">
     ${cnt[p.id]?`<span class="done">✓ ${cnt[p.id]}</span>`:""}
-    <div class="ptop"><span class="badge" style="background:${BADGE[i%BADGE.length]}">${custom?esc(p.name.trim()[0]||"★").toUpperCase():i+1}</span>
-    <span class="pt"><b>${esc(p.name)}</b><span>${custom?`${mmss(p.run)} correr · ${mmss(p.walk)} caminar · × ${p.rounds}`:p.sub}</span></span>
+    <div class="ptop"><span class="badge${custom?" txt":""}" style="background:${BADGE[i%BADGE.length]}">${custom?esc(initials(p.name)):i+1}</span>
+    <span class="pt"><b>${esc(p.name)}</b><span>${custom?`Corre ${mmss(p.run)} · camina ${mmss(p.walk)} · ×${p.rounds}`:p.sub}</span></span>
     <span class="pmin tnum">${Math.round(planTotal(p)/60)}<small>min</small></span>
+    ${custom&&i>0?`<span class="up" data-up="${p.id}" role="button" aria-label="Subir">↑</span>`:""}
     ${custom?`<span class="edit" data-edit="${p.id}" role="button" aria-label="Editar">✎</span>`:""}</div>
     <div class="bar">${barHTML(p)}</div></button>`;
+  // si hay sesiones propias, van arriba del todo
+  if(customs.length)$("blocks").prepend($("blkMine"));else $("blocks").append($("blkMine"));
   $("presets").innerHTML=PRESETS.map((p,i)=>card(p,i,false)).join("");
-  $("customs").innerHTML=customs.length?customs.map((p,i)=>card(p,i+3,true)).join(""):`<div class="empty">Crea tu propia combinación de correr y caminar.<br>Aparecerá aquí con el nombre que le pongas.</div>`;
+  $("customs").innerHTML=customs.length?customs.map((p,i)=>card(p,i,true)).join(""):`<div class="empty">Crea tu propia combinación de correr y caminar.<br>Aparecerá aquí con el nombre que le pongas.</div>`;
 }
 document.querySelectorAll("[data-opt]").forEach(b=>b.addEventListener("click",()=>{opts[b.dataset.opt]=!opts[b.dataset.opt];store.set("int_opts",opts);b.setAttribute("aria-pressed",opts[b.dataset.opt]);}));
 document.addEventListener("click",e=>{
+  const up=e.target.closest("[data-up]");if(up){e.stopPropagation();const i=customs.findIndex(c=>c.id===up.dataset.up);if(i>0){[customs[i-1],customs[i]]=[customs[i],customs[i-1]];store.set("int_custom",customs);renderSetup();}return;}
   const ed=e.target.closest("[data-edit]");if(ed){e.stopPropagation();openEditor(customs.find(c=>c.id===ed.dataset.edit));return;}
   const st=e.target.closest("[data-start]");if(st){const p=PRESETS.find(x=>x.id===st.dataset.start)||customs.find(x=>x.id===st.dataset.start);if(p)startSession(p);}
 });
@@ -395,7 +432,7 @@ const FIELDS=[
 let ed=null;
 function openEditor(p){
   ed=p?Object.assign({},p):{id:"c"+Date.now(),name:"",warm:180,run:60,walk:120,rounds:6,cool:120};
-  $("edTitle").textContent=p?"Editar sesión":"Nueva sesión";$("edName").value=ed.name;$("edDel").hidden=!p;
+  $("edTitle").textContent=p?"Editar sesión":"Nueva sesión";$("edName").value=ed.name;$("edBadge").textContent=initials(ed.name);$("edDel").hidden=!p;
   $("edFields").innerHTML=FIELDS.map(f=>`<div class="field">${f.ph?`<i class="dot" style="background:${PH[f.ph].c}"></i>`:`<i class="dot" style="background:var(--fg)"></i>`}
     <div class="fl"><b>${f.t}</b><span>${f.s}</span></div>
     <div class="step"><button data-f="${f.k}" data-d="-1" aria-label="Menos">−</button><output id="o_${f.k}" class="tnum"></output><button data-f="${f.k}" data-d="1" aria-label="Más">+</button></div></div>`).join("");
@@ -405,13 +442,14 @@ function edRender(){
   FIELDS.forEach(f=>$("o_"+f.k).textContent=f.k==="rounds"?"× "+ed.rounds:mmss(ed[f.k]));
   $("edTotal").textContent=mmss(planTotal(ed))+" min";$("edRun").textContent=mmss(ed.run*ed.rounds);$("edBar").innerHTML=barHTML(ed);
 }
+$("edName").addEventListener("input",e=>$("edBadge").textContent=initials(e.target.value));
 let rep=null;
 function bump(btn){const f=FIELDS.find(x=>x.k===btn.dataset.f);ed[f.k]=Math.min(f.max,Math.max(f.min,ed[f.k]+f.step*(+btn.dataset.d)));edRender();}
 $("edFields").addEventListener("pointerdown",e=>{const b=e.target.closest("[data-f]");if(!b)return;e.preventDefault();bump(b);let n=0;rep=setInterval(()=>{if(++n>3)bump(b);},120);});
 ["pointerup","pointerleave","pointercancel"].forEach(t=>$("edFields").addEventListener(t,()=>clearInterval(rep)));
 $("edSave").addEventListener("click",()=>{
   ed.name=$("edName").value.trim()||`Mi sesión ${customs.length+1}`;
-  const i=customs.findIndex(c=>c.id===ed.id);if(i>=0)customs[i]=ed;else customs.push(ed);
+  const i=customs.findIndex(c=>c.id===ed.id);if(i>=0)customs[i]=ed;else customs.unshift(ed);
   store.set("int_custom",customs);show("setup");
 });
 $("edDel").addEventListener("click",()=>{
@@ -473,6 +511,7 @@ $("ringAll").style.strokeDasharray=C_ALL;$("ringPh").style.strokeDasharray=C_PH;
 
 function startSession(p){
   audioInit();beep(660,.08,.2);
+  say("Prepárate."); // en iPhone la voz solo se desbloquea si la primera frase sale de un toque
   const steps=buildSteps(p);let acc=0;steps.forEach(s=>{s.at=acc;acc+=s.d;});
   S={p,steps,total:acc,pos:0,idx:-1,last:Date.now(),paused:false,m:0,t:{run:0,walk:0},b:0,beepAt:-1,halfDone:false,started:Date.now()};
   $("scr-run").hidden=false;document.body.style.overflow="hidden";
@@ -520,7 +559,7 @@ function draw(){
   const s=S.steps[S.idx],inStep=S.pos-s.at,left=Math.max(0,s.d-inStep),leftCeil=Math.ceil(left-1e-6);
   $("rCount").textContent=mmss(leftCeil);
   const work=S.total-S.steps[0].d,posW=Math.max(0,S.pos-S.steps[0].d);
-  $("rLeft").textContent=mmss(Math.ceil(work-posW))+" restantes";
+  $("rLeft").textContent=mmss(Math.ceil(work-posW));
   const nRuns=S.p.rounds;
   $("rRound").textContent=s.k==="run"||s.k==="walk"?`Ronda ${s.r} de ${nRuns}`:PH[s.k].n;
   $("rKm").textContent=km(S.m)+" km";
