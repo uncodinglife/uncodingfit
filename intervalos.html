@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="UncodingFit">
+<title>Intervalos · UncodingFit</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d0f12">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#f4f6f5; --surface:#ffffff; --surface-2:#eef1ef;
+  --fg:#14191b; --muted:#59646a; --line:#e0e5e2;
+  --accent:#ff5a1f;
+  --warm:#f59e0b; --run:#22c55e; --walk:#3b82f6; --cool:#8b5cf6; --prep:#64748b;
+  --display:"Archivo",system-ui,sans-serif; --body:"Public Sans",system-ui,sans-serif;
+  --radius:18px; --appw:480px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1314; --surface:#161d1f; --surface-2:#1d2528; --fg:#eef2f0; --muted:#95a1a5; --line:#273033; --accent:#ff6a33; color-scheme:dark;
+}}
+:root[data-theme="dark"]{--bg:#0e1314; --surface:#161d1f; --surface-2:#1d2528; --fg:#eef2f0; --muted:#95a1a5; --line:#273033; --accent:#ff6a33; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.45;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-.02em}
+button{font-family:var(--body);cursor:pointer}
+.tnum{font-variant-numeric:tabular-nums}
+[hidden]{display:none!important}
+.app{max-width:var(--appw);margin:0 auto;min-height:100vh}
+.screen{padding:max(12px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+
+/* cabecera */
+.hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.hdr h1{font-size:1.35rem;flex:1}
+.ibtn{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--fg);text-decoration:none;font-size:1.1rem;font-weight:700}
+.ibtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* tarjeta de progreso */
+.prog{border-radius:22px;padding:18px;color:#fff;background:linear-gradient(135deg,#0ea5e9,#22c55e 60%,#84cc16);position:relative;overflow:hidden;cursor:pointer;border:0;width:100%;text-align:left;display:block}
+.prog::after{content:"";position:absolute;width:160px;height:160px;border-radius:50%;border:18px solid rgba(255,255,255,.18);right:-40px;top:-50px}
+.prog .lbl{font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.9}
+.prog .row{display:flex;gap:18px;margin-top:8px;position:relative;z-index:1}
+.prog .n{font-family:var(--display);font-weight:900;font-size:1.9rem;line-height:1}
+.prog .u{font-size:.78rem;opacity:.9;font-weight:600}
+.prog .more{position:absolute;right:16px;bottom:14px;font-size:.78rem;font-weight:700;opacity:.95}
+
+/* opciones */
+.opts{display:flex;gap:8px;margin:14px 0 6px;flex-wrap:wrap}
+.opt{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:8px 13px;font-size:.82rem;font-weight:700}
+.opt[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.hint{font-size:.76rem;color:var(--muted);margin:4px 2px 0}
+
+.sec{display:flex;align-items:flex-end;gap:10px;margin:22px 0 4px}
+.sec h2{font-size:1.15rem;flex:1}
+.ssub{font-size:.82rem;color:var(--muted);margin:0 0 12px}
+.add{border:0;background:var(--accent);color:#fff;font-weight:700;font-size:.85rem;border-radius:12px;padding:9px 14px}
+
+/* tarjetas de plan */
+.plans{display:flex;flex-direction:column;gap:10px}
+.plan{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:var(--radius);padding:13px 14px 12px;position:relative}
+.plan:active{transform:scale(.99)}
+.ptop{display:flex;align-items:center;gap:12px}
+.badge{flex:0 0 auto;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-family:var(--display);font-weight:900;color:#fff;font-size:1.05rem}
+.pt{flex:1;min-width:0}
+.pt b{display:block;font-family:var(--display);font-size:1rem;letter-spacing:-.01em}
+.pt span{display:block;font-size:.78rem;color:var(--muted)}
+.pmin{text-align:right;font-family:var(--display);font-weight:800;font-size:1.05rem;line-height:1}
+.pmin small{display:block;font-family:var(--body);font-size:.66rem;color:var(--muted);font-weight:600}
+.done{position:absolute;top:-7px;right:12px;font-size:.66rem;font-weight:800;background:var(--run);color:#fff;border-radius:999px;padding:2px 8px}
+.edit{flex:0 0 auto;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);width:34px;height:34px;border-radius:10px;font-size:.95rem}
+.bar{display:flex;gap:2px;height:9px;border-radius:5px;overflow:hidden;margin-top:11px}
+.bar i{display:block;height:100%}
+.empty{border:1.5px dashed var(--line);border-radius:var(--radius);padding:18px;text-align:center;color:var(--muted);font-size:.85rem}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.72rem;color:var(--muted);margin-top:14px}
+.legend span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;background:var(--c);vertical-align:-1px}
+
+/* editor */
+.field{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.field .fl{flex:1}
+.field .fl b{display:block;font-size:.92rem}
+.field .fl span{font-size:.74rem;color:var(--muted)}
+.dot{width:12px;height:12px;border-radius:4px;flex:0 0 auto}
+.step{display:flex;align-items:center;gap:6px}
+.step button{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);font-size:1.25rem;font-weight:700}
+.step output{min-width:58px;text-align:center;font-family:var(--display);font-weight:800;font-size:1.15rem}
+.name{width:100%;font-family:var(--body);font-size:1rem;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:12px}
+.name:focus{outline:2px solid var(--accent);outline-offset:1px}
+.preview{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;margin:6px 0 14px}
+.preview .tt{display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted)}
+.preview .tt b{color:var(--fg);font-family:var(--display);font-size:1.05rem}
+.big{width:100%;border:0;border-radius:16px;padding:16px;font-size:1.05rem;font-weight:800;font-family:var(--display);color:#fff;background:var(--accent)}
+.big.ghost{background:none;color:#ef4444;border:1px solid var(--line);margin-top:10px;font-size:.92rem}
+.big.dark{background:var(--fg);color:var(--bg)}
+
+/* sesión activa */
+#scr-run{position:fixed;inset:0;z-index:20;color:#fff;background:#0b0f12;display:flex;flex-direction:column;align-items:center;overflow:hidden;
+  padding:max(14px,env(safe-area-inset-top)) 18px max(18px,env(safe-area-inset-bottom))}
+.runbg{position:absolute;inset:0;background:var(--ph,#64748b);transition:background-color .9s ease;z-index:0}
+.runbg::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,rgba(11,15,18,.15) 0,rgba(11,15,18,.75) 55%,#0b0f12 95%)}
+#scr-run>*:not(.runbg){position:relative;z-index:1}
+.rtop{width:100%;max-width:460px;display:flex;justify-content:space-between;gap:8px}
+.pill{background:rgba(255,255,255,.14);backdrop-filter:blur(6px);border-radius:999px;padding:7px 12px;font-size:.82rem;font-weight:700;white-space:nowrap}
+.ringwrap{position:relative;width:min(84vw,340px,52vh);aspect-ratio:1;margin-top:auto}
+.ringwrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ringwrap circle{fill:none;stroke-linecap:round}
+.rtrack{stroke:rgba(255,255,255,.12)}
+#ringPh{stroke:var(--ph);transition:stroke .9s ease;filter:drop-shadow(0 0 10px var(--ph))}
+#ringAll{stroke:rgba(255,255,255,.85)}
+.center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 14%}
+.verb{font-family:var(--display);font-weight:900;font-size:clamp(2rem,10vw,2.9rem);line-height:1;letter-spacing:.01em}
+.count{font-family:var(--display);font-weight:800;font-size:clamp(3.2rem,17vw,4.8rem);line-height:1.05;font-variant-numeric:tabular-nums}
+.phint{font-size:.84rem;opacity:.85;margin-top:4px;line-height:1.3}
+.next{margin-top:auto;width:100%;max-width:460px;background:rgba(255,255,255,.1);backdrop-filter:blur(6px);border-radius:18px;padding:12px 16px;display:flex;align-items:center;gap:12px}
+.next .dot{width:14px;height:14px;border-radius:5px}
+.next .nl{font-size:.72rem;opacity:.75;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.next .nv{font-weight:700;font-size:1rem}
+.ctrls{display:flex;align-items:center;justify-content:center;gap:26px;margin-top:16px}
+.cbtn{width:58px;height:58px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center}
+.cbtn svg{width:24px;height:24px;fill:currentColor}
+.cbtn.main{width:80px;height:80px;background:#fff;color:#0b0f12}
+.cbtn.main svg{width:32px;height:32px}
+.gpsnote{font-size:.72rem;opacity:.7;margin-top:8px;min-height:1em}
+
+/* resumen */
+.sumhero{text-align:center;padding:16px 0 6px;position:relative}
+.sumhero .medal{width:96px;height:96px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;font-size:2.8rem;background:conic-gradient(var(--warm),var(--run),var(--walk),var(--cool),var(--warm));box-shadow:0 10px 30px -10px rgba(34,197,94,.6)}
+.sumhero .medal span{width:76px;height:76px;border-radius:50%;background:var(--bg);display:grid;place-items:center}
+.sumhero h1{font-size:1.6rem}
+.sumhero p{color:var(--muted);margin:4px 0 0;font-size:.9rem}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:13px 14px}
+.tile .k{font-size:.74rem;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px}
+.tile .v{font-family:var(--display);font-weight:900;font-size:1.55rem;line-height:1.15}
+.tile.wide{grid-column:1/-1}
+.newm{background:linear-gradient(135deg,#fde68a,#fbbf24);color:#422006;border-radius:16px;padding:12px 14px;margin-bottom:10px;font-weight:700;font-size:.9rem}
+.month{font-size:.85rem;color:var(--muted);text-align:center;margin:4px 0 16px}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.confetti i{position:absolute;width:8px;height:12px;border-radius:2px;top:-14px;animation:fall 2.6s ease-in forwards}
+@keyframes fall{to{transform:translateY(340px) rotate(540deg);opacity:0}}
+
+/* historial */
+.ms{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
+.m{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;font-size:.7rem;font-weight:700;color:var(--muted)}
+.m .e{font-size:1.5rem;display:block;filter:grayscale(1);opacity:.35}
+.m.on{color:var(--fg);border-color:#fbbf24;background:color-mix(in srgb,#fbbf24 12%,var(--surface))}
+.m.on .e{filter:none;opacity:1}
+.hlist{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.hi{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.hi:last-child{border-bottom:0}
+.hi .d{width:44px;text-align:center;flex:0 0 auto;line-height:1.1}
+.hi .d b{display:block;font-family:var(--display);font-size:1.2rem}
+.hi .d small{font-size:.66rem;color:var(--muted);text-transform:uppercase;font-weight:700}
+.hi .t{flex:1;min-width:0}
+.hi .t b{display:block;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hi .t span{font-size:.8rem;color:var(--muted)}
+.del{border:0;background:none;color:var(--muted);font-size:1.1rem;padding:6px}
+.del.sure{color:#ef4444;font-size:.75rem;font-weight:800}
+
+/* hoja de confirmación */
+.sheet{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
+.sheet .box{background:var(--surface);color:var(--fg);width:100%;max-width:var(--appw);border-radius:24px 24px 0 0;padding:22px 18px max(20px,env(safe-area-inset-bottom))}
+.sheet h3{font-size:1.25rem}
+.sheet p{color:var(--muted);font-size:.9rem;margin:6px 0 16px}
+.sheet .row{display:flex;gap:10px}
+.sheet .row .big{margin:0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ============ INICIO ============ -->
+<section class="screen" id="scr-setup">
+  <div class="hdr">
+    <a class="ibtn" href="./" aria-label="Volver al inicio">←</a>
+    <h1>Intervalos</h1>
+    <button class="ibtn" data-go="hist" aria-label="Historial"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
+  </div>
+
+  <button class="prog" data-go="hist">
+    <div class="lbl">Tu progreso</div>
+    <div class="row" id="progRow"></div>
+    <div class="more">Ver historial →</div>
+  </button>
+
+  <div class="opts">
+    <button class="opt" data-opt="gps">📍 Distancia</button>
+    <button class="opt" data-opt="voice">🗣️ Voz</button>
+    <button class="opt" data-opt="beeps">🔔 Pitidos</button>
+  </div>
+  <p class="hint">Durante la sesión deja la app abierta: la pantalla se queda encendida sola. Puedes llevar música a la vez.</p>
+
+  <div class="sec"><h2>De 0 a 30 minutos</h2></div>
+  <p class="ssub">Haz unas 3 sesiones por nivel y pasa al siguiente cuando lo notes fácil.</p>
+  <div class="plans" id="presets"></div>
+
+  <div class="sec"><h2>Mis sesiones</h2><button class="add" id="newPlan">+ Crear</button></div>
+  <div class="plans" id="customs"></div>
+
+  <div class="legend">
+    <span style="--c:var(--warm)">Calentar</span><span style="--c:var(--run)">Correr</span><span style="--c:var(--walk)">Caminar</span><span style="--c:var(--cool)">Vuelta a la calma</span>
+  </div>
+</section>
+
+<!-- ============ EDITOR ============ -->
+<section class="screen" id="scr-edit" hidden>
+  <div class="hdr">
+    <button class="ibtn" data-go="setup" aria-label="Cancelar">←</button>
+    <h1 id="edTitle">Nueva sesión</h1>
+  </div>
+  <input class="name" id="edName" maxlength="40" placeholder="Nombre (p. ej. Martes por el paseo)">
+  <div id="edFields"></div>
+  <div class="preview">
+    <div class="tt"><span>Duración total</span><b id="edTotal" class="tnum"></b></div>
+    <div class="bar" id="edBar"></div>
+    <div class="tt" style="margin-top:8px"><span>Corriendo</span><b id="edRun" class="tnum" style="font-size:.95rem"></b></div>
+  </div>
+  <button class="big" id="edSave">Guardar sesión</button>
+  <button class="big ghost" id="edDel" hidden>Borrar esta sesión</button>
+</section>
+
+<!-- ============ HISTORIAL ============ -->
+<section class="screen" id="scr-hist" hidden>
+  <div class="hdr">
+    <button class="ibtn" data-go="setup" aria-label="Volver">←</button>
+    <h1>Tu progreso</h1>
+  </div>
+  <div class="tiles" id="hTiles" style="margin-top:0"></div>
+  <div class="sec" style="margin-top:6px"><h2>Logros</h2></div>
+  <div class="ms" id="hMs"></div>
+  <div class="sec"><h2>Sesiones</h2></div>
+  <div id="hList"></div>
+  <p class="hint" style="margin-top:14px">Tu historial se guarda solo en este móvil. La distancia es aproximada (GPS del móvil).</p>
+</section>
+
+<!-- ============ RESUMEN ============ -->
+<section class="screen" id="scr-sum" hidden>
+  <div class="sumhero">
+    <div class="confetti" id="confetti"></div>
+    <div class="medal"><span id="sEmoji">🏅</span></div>
+    <h1 id="sTitle">¡Sesión completada!</h1>
+    <p id="sSub"></p>
+  </div>
+  <div class="tiles" id="sTiles"></div>
+  <div id="sNew"></div>
+  <p class="month" id="sMonth"></p>
+  <button class="big" id="sShare">Compartir mi sesión</button>
+  <button class="big dark" style="margin-top:10px" data-go="setup">Hecho</button>
+</section>
+
+<!-- ============ SESIÓN ACTIVA ============ -->
+<section id="scr-run" hidden>
+  <div class="runbg" id="runbg"></div>
+  <div class="rtop">
+    <span class="pill tnum" id="rLeft">--:-- restantes</span>
+    <span class="pill" id="rRound"></span>
+    <span class="pill tnum" id="rKm" hidden>0,00 km</span>
+  </div>
+  <div class="ringwrap">
+    <svg viewBox="0 0 300 300" aria-hidden="true">
+      <circle class="rtrack" cx="150" cy="150" r="140" stroke-width="7"/>
+      <circle id="ringAll" cx="150" cy="150" r="140" stroke-width="7"/>
+      <circle class="rtrack" cx="150" cy="150" r="114" stroke-width="22"/>
+      <circle id="ringPh" cx="150" cy="150" r="114" stroke-width="22"/>
+    </svg>
+    <div class="center">
+      <div class="verb" id="rVerb">PREPÁRATE</div>
+      <div class="count" id="rCount">0:05</div>
+      <div class="phint" id="rHint"></div>
+    </div>
+  </div>
+  <div class="next" id="rNextBox">
+    <i class="dot" id="rNextDot"></i>
+    <div><div class="nl">Siguiente</div><div class="nv" id="rNext"></div></div>
+  </div>
+  <div class="ctrls">
+    <button class="cbtn" id="bStop" aria-label="Terminar"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button>
+    <button class="cbtn main" id="bPause" aria-label="Pausa"><svg viewBox="0 0 24 24" id="icoPause"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></button>
+    <button class="cbtn" id="bSkip" aria-label="Saltar bloque"><svg viewBox="0 0 24 24"><path d="M5 5l9 7-9 7z"/><rect x="16" y="5" width="3" height="14" rx="1"/></svg></button>
+  </div>
+  <div class="gpsnote" id="gpsNote"></div>
+</section>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="box">
+    <h3>¿Terminar la sesión?</h3>
+    <p>Se guardará lo que llevas hecho.</p>
+    <div class="row">
+      <button class="big dark" id="shKeep">Seguir</button>
+      <button class="big" id="shEnd">Terminar</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ---------- utilidades ---------- */
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{const v=localStorage.getItem("ufit_"+k);return v===null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem("ufit_"+k,JSON.stringify(v));}catch(e){}}};
+(function(){const s=store.get("theme",null);if(s)document.documentElement.setAttribute("data-theme",s);})();
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const mmss=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0");};
+const km=m=>(m/1000).toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2});
+const hm=s=>{const h=Math.floor(s/3600),m=Math.round((s%3600)/60);return h?`${h} h ${m} min`:`${m} min`;};
+const spoken=s=>{const m=Math.floor(s/60),r=s%60;if(!m)return `${r} segundos`;let t=m===1?"un minuto":`${m} minutos`;if(r===30)t+=" y medio";else if(r)t+=` y ${r} segundos`;return t;};
+
+const PH={
+  prep:{c:"#64748b",v:"PREPÁRATE",h:"Guarda el móvil y ponte en marcha",n:"Preparación"},
+  warm:{c:"#f59e0b",v:"CALIENTA",h:"Camina a paso ligero para activar las piernas",n:"Calentar"},
+  run:{c:"#22c55e",v:"CORRE",h:"Ritmo cómodo: que puedas hablar",n:"Correr"},
+  walk:{c:"#3b82f6",v:"CAMINA",h:"Recupera el aire sin pararte",n:"Caminar"},
+  cool:{c:"#8b5cf6",v:"A LA CALMA",h:"Baja el ritmo poco a poco. ¡Ya casi está!",n:"Vuelta a la calma"}
+};
+const BADGE=["#f59e0b","#f97316","#ef4444","#ec4899","#8b5cf6","#3b82f6","#0ea5e9","#22c55e"];
+const PRESETS=[
+  {id:"l1",name:"Primer día",sub:"1 min trotando · 2 min caminando",warm:180,run:60,walk:120,rounds:6,cool:120},
+  {id:"l2",name:"Tomando ritmo",sub:"1:30 trotando · 1:30 caminando",warm:180,run:90,walk:90,rounds:6,cool:120},
+  {id:"l3",name:"Más tiempo activo",sub:"2:30 trotando · 1:30 caminando",warm:180,run:150,walk:90,rounds:5,cool:120},
+  {id:"l4",name:"Resistencia base",sub:"4 bloques de 4 minutos",warm:180,run:240,walk:90,rounds:4,cool:120},
+  {id:"l5",name:"Bloques largos",sub:"3 bloques de 7 minutos",warm:180,run:420,walk:120,rounds:3,cool:120},
+  {id:"l6",name:"Casi continuo",sub:"2 bloques de 12 minutos",warm:180,run:720,walk:120,rounds:2,cool:120},
+  {id:"l7",name:"20 minutos seguidos",sub:"Tu primera carrera continua",warm:180,run:1200,walk:0,rounds:1,cool:120},
+  {id:"l8",name:"Objetivo 30 minutos",sub:"¡Media hora corriendo!",warm:180,run:1800,walk:0,rounds:1,cool:120}
+];
+const MILESTONES=[
+  {id:"s1",e:"👟",t:"1ª sesión",ok:a=>a.n>=1},{id:"s5",e:"🔥",t:"5 sesiones",ok:a=>a.n>=5},{id:"s10",e:"💪",t:"10 sesiones",ok:a=>a.n>=10},
+  {id:"s25",e:"🚀",t:"25 sesiones",ok:a=>a.n>=25},{id:"k5",e:"📍",t:"5 km",ok:a=>a.m>=5000},{id:"k10",e:"🗺️",t:"10 km",ok:a=>a.m>=10000},
+  {id:"k25",e:"🌍",t:"25 km",ok:a=>a.m>=25000},{id:"k50",e:"🏔️",t:"50 km",ok:a=>a.m>=50000},{id:"h1",e:"⏱️",t:"1 hora",ok:a=>a.d>=3600},
+  {id:"h5",e:"⌛",t:"5 horas",ok:a=>a.d>=18000},{id:"r10",e:"⭐",t:"10 min seguidos",ok:a=>a.b>=600},{id:"r30",e:"🏆",t:"30 min seguidos",ok:a=>a.b>=1800}
+];
+
+let opts=Object.assign({gps:true,voice:true,beeps:true},store.get("int_opts",{}));
+let customs=store.get("int_custom",[]);
+let hist=store.get("int_hist",[]);
+
+/* ---------- pasos de una sesión ---------- */
+function buildSteps(p){
+  const s=[{k:"prep",d:5}];
+  if(p.warm>0)s.push({k:"warm",d:p.warm});
+  for(let i=1;i<=p.rounds;i++){
+    s.push({k:"run",d:p.run,r:i});
+    // la última caminata se omite si después viene la vuelta a la calma (serían dos caminatas seguidas)
+    if(p.walk>0&&!(i===p.rounds&&p.cool>0))s.push({k:"walk",d:p.walk,r:i});
+  }
+  if(p.cool>0)s.push({k:"cool",d:p.cool});
+  return s;
+}
+const planTotal=p=>buildSteps(p).slice(1).reduce((a,s)=>a+s.d,0);
+const barHTML=p=>buildSteps(p).slice(1).map(s=>`<i style="flex-grow:${s.d};background:${PH[s.k].c}"></i>`).join("");
+
+/* ---------- navegación ---------- */
+const SCR=["setup","edit","hist","sum"];
+function show(n){SCR.forEach(k=>$("scr-"+k).hidden=k!==n);window.scrollTo(0,0);if(n==="setup")renderSetup();if(n==="hist")renderHist();}
+document.addEventListener("click",e=>{const g=e.target.closest("[data-go]");if(g)show(g.dataset.go);});
+
+/* ---------- inicio ---------- */
+function aggregate(){return hist.reduce((a,h)=>{a.n++;a.d+=h.d;a.m+=h.m||0;a.b=Math.max(a.b,h.b||0);return a;},{n:0,d:0,m:0,b:0});}
+function renderSetup(){
+  const a=aggregate();
+  $("progRow").innerHTML=`<div><div class="n tnum">${(a.d/3600).toLocaleString("es-ES",{maximumFractionDigits:1})}</div><div class="u">horas</div></div>
+    <div><div class="n tnum">${km(a.m)}</div><div class="u">km</div></div><div><div class="n tnum">${a.n}</div><div class="u">sesiones</div></div>`;
+  document.querySelectorAll("[data-opt]").forEach(b=>b.setAttribute("aria-pressed",opts[b.dataset.opt]));
+  const cnt={};hist.forEach(h=>{if(h.p&&h.c)cnt[h.p]=(cnt[h.p]||0)+1;});
+  const card=(p,i,custom)=>`<button class="plan" data-start="${p.id}">
+    ${cnt[p.id]?`<span class="done">✓ ${cnt[p.id]}</span>`:""}
+    <div class="ptop"><span class="badge" style="background:${BADGE[i%BADGE.length]}">${custom?esc(p.name.trim()[0]||"★").toUpperCase():i+1}</span>
+    <span class="pt"><b>${esc(p.name)}</b><span>${custom?`${mmss(p.run)} correr · ${mmss(p.walk)} caminar · × ${p.rounds}`:p.sub}</span></span>
+    <span class="pmin tnum">${Math.round(planTotal(p)/60)}<small>min</small></span>
+    ${custom?`<span class="edit" data-edit="${p.id}" role="button" aria-label="Editar">✎</span>`:""}</div>
+    <div class="bar">${barHTML(p)}</div></button>`;
+  $("presets").innerHTML=PRESETS.map((p,i)=>card(p,i,false)).join("");
+  $("customs").innerHTML=customs.length?customs.map((p,i)=>card(p,i+3,true)).join(""):`<div class="empty">Crea tu propia combinación de correr y caminar.<br>Aparecerá aquí con el nombre que le pongas.</div>`;
+}
+document.querySelectorAll("[data-opt]").forEach(b=>b.addEventListener("click",()=>{opts[b.dataset.opt]=!opts[b.dataset.opt];store.set("int_opts",opts);b.setAttribute("aria-pressed",opts[b.dataset.opt]);}));
+document.addEventListener("click",e=>{
+  const ed=e.target.closest("[data-edit]");if(ed){e.stopPropagation();openEditor(customs.find(c=>c.id===ed.dataset.edit));return;}
+  const st=e.target.closest("[data-start]");if(st){const p=PRESETS.find(x=>x.id===st.dataset.start)||customs.find(x=>x.id===st.dataset.start);if(p)startSession(p);}
+});
+
+/* ---------- editor ---------- */
+const FIELDS=[
+  {k:"warm",t:"Calentar",s:"Caminar a paso ligero",min:0,max:900,step:30,ph:"warm"},
+  {k:"run",t:"Correr",s:"Cada bloque de trote",min:15,max:3600,step:15,ph:"run"},
+  {k:"walk",t:"Caminar",s:"Descanso entre bloques",min:0,max:1800,step:15,ph:"walk"},
+  {k:"rounds",t:"Repeticiones",s:"Veces que se repite",min:1,max:30,step:1},
+  {k:"cool",t:"Vuelta a la calma",s:"Al final",min:0,max:900,step:30,ph:"cool"}
+];
+let ed=null;
+function openEditor(p){
+  ed=p?Object.assign({},p):{id:"c"+Date.now(),name:"",warm:180,run:60,walk:120,rounds:6,cool:120};
+  $("edTitle").textContent=p?"Editar sesión":"Nueva sesión";$("edName").value=ed.name;$("edDel").hidden=!p;
+  $("edFields").innerHTML=FIELDS.map(f=>`<div class="field">${f.ph?`<i class="dot" style="background:${PH[f.ph].c}"></i>`:`<i class="dot" style="background:var(--fg)"></i>`}
+    <div class="fl"><b>${f.t}</b><span>${f.s}</span></div>
+    <div class="step"><button data-f="${f.k}" data-d="-1" aria-label="Menos">−</button><output id="o_${f.k}" class="tnum"></output><button data-f="${f.k}" data-d="1" aria-label="Más">+</button></div></div>`).join("");
+  edRender();show("edit");
+}
+function edRender(){
+  FIELDS.forEach(f=>$("o_"+f.k).textContent=f.k==="rounds"?"× "+ed.rounds:mmss(ed[f.k]));
+  $("edTotal").textContent=mmss(planTotal(ed))+" min";$("edRun").textContent=mmss(ed.run*ed.rounds);$("edBar").innerHTML=barHTML(ed);
+}
+let rep=null;
+function bump(btn){const f=FIELDS.find(x=>x.k===btn.dataset.f);ed[f.k]=Math.min(f.max,Math.max(f.min,ed[f.k]+f.step*(+btn.dataset.d)));edRender();}
+$("edFields").addEventListener("pointerdown",e=>{const b=e.target.closest("[data-f]");if(!b)return;e.preventDefault();bump(b);let n=0;rep=setInterval(()=>{if(++n>3)bump(b);},120);});
+["pointerup","pointerleave","pointercancel"].forEach(t=>$("edFields").addEventListener(t,()=>clearInterval(rep)));
+$("edSave").addEventListener("click",()=>{
+  ed.name=$("edName").value.trim()||`Mi sesión ${customs.length+1}`;
+  const i=customs.findIndex(c=>c.id===ed.id);if(i>=0)customs[i]=ed;else customs.push(ed);
+  store.set("int_custom",customs);show("setup");
+});
+$("edDel").addEventListener("click",()=>{
+  if($("edDel").dataset.sure!=="1"){$("edDel").dataset.sure="1";$("edDel").textContent="Toca otra vez para borrar";return;}
+  delete $("edDel").dataset.sure;$("edDel").textContent="Borrar esta sesión";
+  customs=customs.filter(c=>c.id!==ed.id);store.set("int_custom",customs);show("setup");
+});
+
+/* ---------- audio y voz ---------- */
+let actx=null;
+function audioInit(){
+  try{if(navigator.audioSession)navigator.audioSession.type="ambient";}catch(e){} // mezclar con la música, no pararla
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.resume();}catch(e){}
+}
+function beep(f=880,d=.13,v=.35){
+  if(!opts.beeps||!actx)return;
+  try{const o=actx.createOscillator(),g=actx.createGain();o.type="sine";o.frequency.value=f;
+    g.gain.setValueAtTime(0,actx.currentTime);g.gain.linearRampToValueAtTime(v,actx.currentTime+.01);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+d);
+    o.connect(g).connect(actx.destination);o.start();o.stop(actx.currentTime+d+.02);}catch(e){}
+}
+let voiceES=null;
+function pickVoice(){const v=speechSynthesis.getVoices();voiceES=v.find(x=>x.lang==="es-ES")||v.find(x=>/^es/i.test(x.lang))||null;}
+if("speechSynthesis"in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
+function say(t){
+  if(!opts.voice||!("speechSynthesis"in window))return;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="es-ES";if(voiceES)u.voice=voiceES;u.rate=1.02;speechSynthesis.speak(u);}catch(e){}
+}
+
+/* ---------- pantalla encendida ---------- */
+let wl=null;
+async function wakeOn(){try{if("wakeLock"in navigator&&!wl){wl=await navigator.wakeLock.request("screen");wl.addEventListener("release",()=>wl=null);}}catch(e){}}
+function wakeOff(){try{wl&&wl.release();}catch(e){}wl=null;}
+
+/* ---------- GPS (distancia aproximada) ---------- */
+let geoId=null,lastPt=null;
+function hav(a,b){const R=6371000,r=x=>x*Math.PI/180,dLa=r(b.la-a.la),dLo=r(b.lo-a.lo);const h=Math.sin(dLa/2)**2+Math.cos(r(a.la))*Math.cos(r(b.la))*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
+function gpsStart(){
+  if(!opts.gps||!("geolocation"in navigator))return;
+  $("rKm").hidden=false;$("gpsNote").textContent="Buscando señal GPS…";
+  geoId=navigator.geolocation.watchPosition(p=>{
+    if(!S||S.paused)return;
+    const c=p.coords;if(c.accuracy>30){$("gpsNote").textContent="Señal GPS débil…";return;}
+    $("gpsNote").textContent="";
+    const pt={la:c.latitude,lo:c.longitude,t:p.timestamp};
+    if(!lastPt){lastPt=pt;return;}
+    const d=hav(lastPt,pt),dt=(pt.t-lastPt.t)/1000;
+    if(d<Math.max(5,c.accuracy*.5))return;            // ruido: esperar a moverse de verdad
+    if(dt>0&&d/dt>7){lastPt=pt;return;}                 // salto imposible (>25 km/h): descartar
+    S.m+=d;lastPt=pt;
+  },e=>{$("gpsNote").textContent=e.code===1?"Sin permiso de ubicación: no se medirá la distancia.":"";if(e.code===1)$("rKm").hidden=true;},
+  {enableHighAccuracy:true,maximumAge:0,timeout:20000});
+}
+function gpsStop(){if(geoId!==null)navigator.geolocation.clearWatch(geoId);geoId=null;lastPt=null;}
+
+/* ---------- motor de la sesión ---------- */
+let S=null,timer=null;
+const C_ALL=2*Math.PI*140,C_PH=2*Math.PI*114;
+$("ringAll").style.strokeDasharray=C_ALL;$("ringPh").style.strokeDasharray=C_PH;
+
+function startSession(p){
+  audioInit();beep(660,.08,.2);
+  const steps=buildSteps(p);let acc=0;steps.forEach(s=>{s.at=acc;acc+=s.d;});
+  S={p,steps,total:acc,pos:0,idx:-1,last:Date.now(),paused:false,m:0,t:{run:0,walk:0},b:0,beepAt:-1,halfDone:false,started:Date.now()};
+  $("scr-run").hidden=false;document.body.style.overflow="hidden";
+  history.pushState({run:1},"");
+  wakeOn();gpsStart();setPaused(false);
+  timer=setInterval(tick,200);tick();
+}
+function stepIdx(pos){let i=0;while(i<S.steps.length-1&&pos>=S.steps[i].at+S.steps[i].d)i++;return i;}
+function tick(){
+  if(!S)return;
+  const now=Date.now(),dt=(now-S.last)/1000;S.last=now;
+  if(!S.paused){
+    const cur=S.steps[S.idx<0?0:S.idx];
+    S.pos+=dt;
+    if(cur.k!=="prep")S.t[cur.k==="run"?"run":"walk"]+=dt; // tiempo real en movimiento (los saltos no suman)
+  }
+  if(S.pos>=S.total){finish(true);return;}
+  const i=stepIdx(S.pos);
+  if(i!==S.idx){
+    const prev=S.steps[S.idx];
+    if(prev&&prev.k==="run"&&!S.skipped)S.b=Math.max(S.b,prev.d);
+    S.skipped=false;S.idx=i;S.beepAt=-1;S.halfDone=false;
+    enterStep(dt>3); // si volvemos de segundo plano tras mucho rato, no amontonar avisos
+  }
+  draw();
+}
+function enterStep(quiet){
+  const s=S.steps[S.idx];
+  document.getElementById("scr-run").style.setProperty("--ph",PH[s.k].c);
+  $("rVerb").textContent=PH[s.k].v;$("rHint").textContent=PH[s.k].h;
+  const nx=S.steps[S.idx+1];
+  if(nx){$("rNext").textContent=`${PH[nx.k].n} ${mmss(nx.d)}`;$("rNextDot").style.background=PH[nx.k].c;}
+  else{$("rNext").textContent="¡Fin de la sesión!";$("rNextDot").style.background="#fbbf24";}
+  if(s.k==="prep")return;
+  beep(1046,.35,.4);
+  if(quiet)return;
+  const runs=S.steps.filter(x=>x.k==="run"),firstRun=runs[0]===s,lastRun=runs.length>1&&runs[runs.length-1]===s;
+  const msg={warm:`Calentamiento. Camina a paso ligero, ${spoken(s.d)}.`,
+    run:firstRun?`¡Toca correr! ${spoken(s.d)}, trote suave.`:lastRun?`Último bloque. Corre ${spoken(s.d)}. ¡Tú puedes!`:`Toca correr, ${spoken(s.d)}.`,
+    walk:`Muy bien. Camina ${spoken(s.d)}.`,
+    cool:`Genial. Vuelta a la calma, ${spoken(s.d)}. ¡Ya casi está!`}[s.k];
+  setTimeout(()=>say(msg),350);
+}
+function draw(){
+  const s=S.steps[S.idx],inStep=S.pos-s.at,left=Math.max(0,s.d-inStep),leftCeil=Math.ceil(left-1e-6);
+  $("rCount").textContent=mmss(leftCeil);
+  const work=S.total-S.steps[0].d,posW=Math.max(0,S.pos-S.steps[0].d);
+  $("rLeft").textContent=mmss(Math.ceil(work-posW))+" restantes";
+  const nRuns=S.p.rounds;
+  $("rRound").textContent=s.k==="run"||s.k==="walk"?`Ronda ${s.r} de ${nRuns}`:PH[s.k].n;
+  $("rKm").textContent=km(S.m)+" km";
+  $("ringPh").style.strokeDashoffset=C_PH*(1-Math.min(1,inStep/s.d));
+  $("ringAll").style.strokeDashoffset=C_ALL*(1-Math.min(1,posW/work));
+  if(!S.paused&&leftCeil<=3&&leftCeil>=1&&S.beepAt!==leftCeil&&s.d>=5){S.beepAt=leftCeil;beep(s.k==="prep"?660:880);}
+  if(!S.paused&&s.k==="run"&&s.d>=240&&!S.halfDone&&inStep>=s.d/2){S.halfDone=true;say("Mitad del bloque. Vas muy bien.");}
+}
+function setPaused(p){
+  if(!S)return;S.paused=p;S.last=Date.now();
+  if(p)lastPt=null; // al reanudar, no sumar la distancia recorrida en pausa
+  $("icoPause").innerHTML=p?'<path d="M7 5l12 7-12 7z"/>':'<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>';
+  $("bPause").setAttribute("aria-label",p?"Continuar":"Pausa");
+  if(p){$("rHint").textContent="En pausa";say("Pausa.");}else if(S.idx>=0)$("rHint").textContent=PH[S.steps[S.idx].k].h;
+}
+$("bPause").addEventListener("click",()=>{audioInit();setPaused(!S.paused);});
+$("bSkip").addEventListener("click",()=>{if(!S)return;const s=S.steps[S.idx];S.skipped=true;S.pos=s.at+s.d;tick();});
+$("bStop").addEventListener("click",()=>{if(!S)return;setPaused(true);$("sheet").hidden=false;});
+$("shKeep").addEventListener("click",()=>{$("sheet").hidden=true;setPaused(false);});
+$("shEnd").addEventListener("click",()=>{$("sheet").hidden=true;finish(false);});
+window.addEventListener("popstate",()=>{if(S){history.pushState({run:1},"");setPaused(true);$("sheet").hidden=false;}});
+document.addEventListener("visibilitychange",()=>{if(S&&document.visibilityState==="visible"){wakeOn();tick();}});
+
+function finish(completed){
+  clearInterval(timer);gpsStop();wakeOff();
+  const s=S;S=null;
+  if(completed){const last=s.steps.filter(x=>x.k==="run").pop();if(last&&!s.skipped)s.b=Math.max(s.b,last.d);}
+  $("scr-run").hidden=true;document.body.style.overflow="";
+  if(history.state&&history.state.run)history.back();
+  const run=Math.round(s.t.run),walk=Math.round(s.t.walk),d=run+walk;
+  if(completed)say("¡Sesión completada! Enhorabuena.");
+  if(d<60&&!completed){show("setup");return;}   // menos de un minuto: no se guarda
+  const before=new Set(MILESTONES.filter(x=>x.ok(aggregate())).map(x=>x.id));
+  const rec={t:Date.now(),n:s.p.name,p:s.p.id,d,r:run,w:walk,m:opts.gps?Math.round(s.m):null,c:completed,b:s.b};
+  hist.unshift(rec);store.set("int_hist",hist);
+  const fresh=MILESTONES.filter(x=>x.ok(aggregate())&&!before.has(x.id));
+  renderSummary(rec,fresh);show("sum");
+}
+
+/* ---------- resumen ---------- */
+let lastRec=null;
+function renderSummary(r,fresh){
+  lastRec=r;
+  $("sEmoji").textContent=r.c?"🏅":"👍";
+  $("sTitle").textContent=r.c?"¡Sesión completada!":"Sesión guardada";
+  $("sSub").textContent=r.n;
+  $("sTiles").innerHTML=`<div class="tile wide"><div class="k">Tiempo total</div><div class="v tnum">${mmss(r.d)}</div></div>
+    <div class="tile"><div class="k"><i class="dot" style="background:var(--run)"></i>Corriendo</div><div class="v tnum">${mmss(r.r)}</div></div>
+    <div class="tile"><div class="k"><i class="dot" style="background:var(--walk)"></i>Caminando</div><div class="v tnum">${mmss(r.w)}</div></div>
+    ${r.m!==null?`<div class="tile wide"><div class="k">📍 Distancia aproximada</div><div class="v tnum">${km(r.m)} km</div></div>`:""}`;
+  $("sNew").innerHTML=fresh.map(f=>`<div class="newm">${f.e} ¡Nuevo logro! ${f.t}</div>`).join("");
+  const now=new Date(),mo=hist.filter(h=>{const d=new Date(h.t);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
+  $("sMonth").textContent=`Este mes: ${mo.length} ${mo.length===1?"sesión":"sesiones"} · ${hm(mo.reduce((a,h)=>a+h.d,0))}`+(mo.some(h=>h.m)?` · ${km(mo.reduce((a,h)=>a+(h.m||0),0))} km`:"");
+  const cf=$("confetti");cf.innerHTML="";
+  if(r.c){const cols=Object.values(PH).map(x=>x.c).concat("#fbbf24","#ef4444");for(let i=0;i<40;i++){const e=document.createElement("i");e.style.left=Math.random()*100+"%";e.style.background=cols[i%cols.length];e.style.animationDelay=Math.random()*.8+"s";cf.appendChild(e);}}
+}
+$("sShare").addEventListener("click",async()=>{
+  const r=lastRec;if(!r)return;
+  const url=location.href.split("#")[0].replace(/intervalos\.html.*$/,"");
+  const text=`Hoy he hecho ${mmss(r.d)} min (${mmss(r.r)} corriendo)${r.m?` y ${km(r.m)} km`:""} con UncodingFit 🏃 Es gratis, pruébala:`;
+  try{if(navigator.share){await navigator.share({title:"UncodingFit",text,url});return;}await navigator.clipboard.writeText(text+" "+url);$("sShare").textContent="¡Copiado!";}catch(e){}
+});
+
+/* ---------- historial ---------- */
+function renderHist(){
+  const a=aggregate();
+  $("hTiles").innerHTML=`<div class="tile"><div class="k">⏱️ Horas totales</div><div class="v tnum">${(a.d/3600).toLocaleString("es-ES",{maximumFractionDigits:1})}</div></div>
+    <div class="tile"><div class="k">📍 Kilómetros</div><div class="v tnum">${km(a.m)}</div></div>
+    <div class="tile wide"><div class="k">👟 Sesiones</div><div class="v tnum">${a.n}</div></div>`;
+  $("hMs").innerHTML=MILESTONES.map(m=>`<div class="m${m.ok(a)?" on":""}"><span class="e">${m.e}</span>${m.t}</div>`).join("");
+  if(!hist.length){$("hList").innerHTML='<div class="empty">Aquí aparecerán tus sesiones.<br>¡La primera es la más importante!</div>';return;}
+  $("hList").innerHTML='<div class="hlist">'+hist.map((h,i)=>{const d=new Date(h.t);
+    return `<div class="hi"><div class="d"><b>${d.getDate()}</b><small>${d.toLocaleDateString("es-ES",{month:"short"}).replace(".","")}</small></div>
+    <div class="t"><b>${esc(h.n)}${h.c?" ✓":""}</b><span class="tnum">${Math.round(h.d/60)} min · ${mmss(h.r)} corriendo${h.m!==null?` · ${km(h.m)} km`:""}</span></div>
+    <button class="del" data-del="${i}" aria-label="Borrar">×</button></div>`;}).join("")+"</div>";
+}
+$("hList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-del]");if(!b)return;
+  if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="¿Borrar?";return;}
+  hist.splice(+b.dataset.del,1);store.set("int_hist",hist);renderHist();
+});
+
+$("newPlan").addEventListener("click",()=>openEditor(null));
+show("setup");
+if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+</script>
+</body>
+</html>
