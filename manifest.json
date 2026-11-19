@@ -1,7 +1,7 @@
 {
-  "name": "UncodingFit — Calculadora de proteína",
+  "name": "UncodingFit",
   "short_name": "UncodingFit",
-  "description": "Calcula tu proteína diaria y consulta la proteína de cada alimento. Gratis y sin cuentas.",
+  "description": "Intervalos para empezar a correr y calculadora de proteína. Gratis y sin cuentas.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -27,6 +27,28 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Intervalos",
+      "url": "./intervalos.html",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Proteína",
+      "url": "./proteina.html",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }

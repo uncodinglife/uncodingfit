@@ -1,10 +1,11 @@
 # UncodingFit
 
-PWA gratuita para calcular la proteína diaria recomendada y consultar la proteína de cada alimento. Sin cuentas, sin backend, sin enviar datos a ningún servidor (todo se calcula en el dispositivo).
+PWA gratuita con herramientas de fitness sencillas: intervalos para empezar a correr y calculadora de proteína. Sin cuentas, sin backend, sin enviar datos a ningún servidor (todo se calcula en el dispositivo).
 
 Parte del ecosistema **Uncoding**.
 
 ## Qué hace
+- **Intervalos** (`intervalos.html`): temporizador correr/caminar con plan de 8 niveles (0 → 30 min), sesiones propias, voz, pitidos, pantalla siempre encendida, distancia aproximada por GPS (solo con la app abierta) e historial con logros guardado en el móvil.
 - **Calculadora de proteína**: según sexo, edad, altura, peso, nivel de actividad y objetivo (mantener / ganar músculo / perder grasa). Devuelve un **rango** diario en gramos y el reparto por comida.
 - **Tabla de alimentos**: ~110 alimentos genéricos con proteína, kcal, hidratos y grasa por 100 g; buscable y ordenable, con filtro por categoría.
 
@@ -16,7 +17,9 @@ Valores de referencia de dominio público (USDA FoodData Central) contrastados c
 
 ## Estructura
 ```
-index.html                    app completa (datos embebidos, funciona offline)
+index.html                    portada con las herramientas
+proteina.html                 calculadora de proteína + tabla de alimentos (datos embebidos)
+intervalos.html               temporizador de intervalos + historial
 manifest.json                 PWA
 sw.js                         service worker (cache offline)
 icons/                        iconos PWA
